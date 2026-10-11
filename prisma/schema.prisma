@@ -79,6 +79,8 @@ model Officer {
   rank        Rank?           @relation(fields: [rankId], references: [id])
   divisionId  String?
   division    Division?       @relation(fields: [divisionId], references: [id])
+  subdivisionId String?
+  subdivision Subdivision? @relation(fields: [subdivisionId], references: [id])
   status      OfficerStatus   @default(ACTIVE)
   dutyStatus  DutyStatus      @default(OFF_DUTY)
   hiredAt     DateTime        @default(now())
@@ -101,6 +103,19 @@ model Division {
   name          String    @unique
   discordRoleId String?   @unique
   officers      Officer[]
+  subdivisions Subdivision[]
+}
+
+model Subdivision {
+  id String @id @default(cuid())
+  name String
+  divisionId String
+  division Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  discordRoleId String? @unique
+  officers Officer[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([divisionId, name])
 }
 
 model PatrolSession {
