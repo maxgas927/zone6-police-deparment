@@ -1,2 +1,3 @@
-export { auth as middleware } from "@/auth";
-export const config={matcher:["/((?!api/auth|login|_next/static|_next/image|favicon.ico).*)"]};
+import {NextResponse} from "next/server";import type {NextRequest} from "next/server";
+export function middleware(req:NextRequest){const p=req.nextUrl.pathname;if(p==="/login"||p.startsWith("/api/auth")||p.startsWith("/_next")||p==="/favicon.ico")return NextResponse.next();const hasSession=req.cookies.get("authjs.session-token")||req.cookies.get("__Secure-authjs.session-token");if(!hasSession){const u=new URL("/login",req.url);u.searchParams.set("callbackUrl",p+req.nextUrl.search);return NextResponse.redirect(u)}return NextResponse.next()}
+export const config={matcher:["/((?!_next/static|_next/image).*)"]};
