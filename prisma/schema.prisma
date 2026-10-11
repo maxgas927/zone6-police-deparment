@@ -198,3 +198,43 @@ model FleetVehicle {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model EquipmentAsset {
+  id String @id @default(cuid())
+  assetNumber String @unique
+  name String
+  category String
+  serialNumber String? @unique
+  status String @default("AVAILABLE")
+  assignedOfficerId String?
+  issuedAt DateTime?
+  dueAt DateTime?
+  notes String? @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DisciplineCase {
+  id String @id @default(cuid())
+  caseNumber String @unique
+  officerId String
+  title String
+  category String
+  status String @default("OPEN")
+  summary String @db.Text
+  outcome String? @db.Text
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Announcement {
+  id String @id @default(cuid())
+  title String
+  body String @db.Text
+  priority String @default("NORMAL")
+  authorId String?
+  published Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
