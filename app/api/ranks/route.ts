@@ -1,4 +1,3 @@
-export const dynamic="force-dynamic";
-import { prisma } from "@/lib/prisma";import { NextResponse } from "next/server";
-export async function GET(){return NextResponse.json(await prisma.rank.findMany({orderBy:{priority:"desc"}}))}
-export async function POST(req:Request){const b=await req.json();if(!b.name)return NextResponse.json({error:"name required"},{status:400});return NextResponse.json(await prisma.rank.create({data:{name:String(b.name),priority:Number(b.priority||0),discordRoleId:b.discordRoleId||null}}),{status:201})}
+export const dynamic="force-dynamic";import { prisma } from "@/lib/prisma";import { NextResponse } from "next/server";import { requirePermission } from "@/lib/authz";
+export async function GET(){const a=await requirePermission("personnel.read");if(!a)return NextResponse.json({error:"Forbidden"},{status:403});return NextResponse.json(await prisma.rank.findMany({orderBy:{priority:"desc"}}))}
+export async function POST(req:Request){const a=await requirePermission("admin.manage");if(!a)return NextResponse.json({error:"Forbidden"},{status:403});const b=await req.json();if(!b.name)return NextResponse.json({error:"name required"},{status:400});const rank=await prisma.rank.create({data:{name:String(b.name),priority:Number(b.priority||0),discordRoleId:b.discordRoleId||null}});await prisma.auditLog.create({data:{actorId:a.user.id,action:"RANK_CREATED",entity:"Rank",entityId:rank.id}});return NextResponse.json(rank,{status:201})}
