@@ -41,3 +41,6 @@ nav a{text-decoration:none}
 
 /* Discord avatars */
 .discordpfp{object-fit:cover;object-position:center;padding:0;overflow:hidden}.profile .discordpfp{border:1px solid #2d5f96;box-shadow:0 0 14px #1677ff35}.officerhero .discordpfp{border:2px solid #2d79ca;box-shadow:0 0 26px #1677ff45;background:#0b1726}
+
+/* Discord identity across Personnel */
+.rosteridentity{display:flex!important;align-items:center;gap:9px;min-width:0}.rosteridentity>span{min-width:0}.rosterpfp{width:30px;height:30px;flex:none;border-radius:8px}.rosterpfp.fallback{display:grid;place-items:center;background:#12345d;color:#70b1fa;font-style:normal;font-weight:900;border:1px solid #245a92}.rosteridentity .discordpfp{border:1px solid #285b91;box-shadow:0 0 10px #1677ff25}@media(max-width:720px){.rosterpfp{width:27px;height:27px}}
