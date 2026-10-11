@@ -85,6 +85,7 @@ model Officer {
   patrols     PatrolSession[]
   reports     Report[]
   trainingRecords TrainingRecord[]
+  leaveRequests LeaveRequest[]
 }
 
 model Rank {
@@ -164,4 +165,19 @@ model TrainingRecord {
   notes String? @db.Text
   createdAt DateTime @default(now())
   @@unique([officerId, courseId])
+}
+
+model LeaveRequest {
+  id String @id @default(cuid())
+  officerId String
+  officer Officer @relation(fields: [officerId], references: [id], onDelete: Cascade)
+  startDate DateTime
+  endDate DateTime
+  reason String @db.Text
+  status String @default("PENDING")
+  reviewNote String? @db.Text
+  reviewedBy String?
+  reviewedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
