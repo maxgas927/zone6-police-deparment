@@ -1,0 +1,12 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+enum OfficerStatus { ACTIVE LOA SUSPENDED TERMINATED }
+enum DutyStatus { OFF_DUTY AVAILABLE ON_DUTY BUSY }
+model User { id String @id @default(cuid()) discordId String? @unique email String? @unique name String? image String? officer Officer? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
+model Officer { id String @id @default(cuid()) userId String @unique user User @relation(fields:[userId],references:[id],onDelete:Cascade) badgeNumber String @unique callsign String? @unique rankId String? rank Rank? @relation(fields:[rankId],references:[id]) divisionId String? division Division? @relation(fields:[divisionId],references:[id]) status OfficerStatus @default(ACTIVE) dutyStatus DutyStatus @default(OFF_DUTY) hiredAt DateTime @default(now()) patrols PatrolSession[] reports Report[] }
+model Rank { id String @id @default(cuid()) name String @unique priority Int @default(0) discordRoleId String? @unique officers Officer[] }
+model Division { id String @id @default(cuid()) name String @unique discordRoleId String? @unique officers Officer[] }
+model PatrolSession { id String @id @default(cuid()) officerId String officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade) startedAt DateTime @default(now()) endedAt DateTime? minutes Int? }
+model Report { id String @id @default(cuid()) number String @unique title String type String status String @default("DRAFT") officerId String officer Officer @relation(fields:[officerId],references:[id]) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
+model DiscordRoleMapping { id String @id @default(cuid()) discordRoleId String @unique appRole String syncEnabled Boolean @default(true) createdAt DateTime @default(now()) }
+model AuditLog { id String @id @default(cuid()) actorId String? action String entity String entityId String? metadata Json? createdAt DateTime @default(now()) }
