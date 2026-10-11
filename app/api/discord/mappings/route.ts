@@ -1,26 +1,5 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";import { prisma } from "@/lib/prisma";import { requirePermission } from "@/lib/authz";
 export const dynamic="force-dynamic";
-
-export async function GET(){
-  try{return NextResponse.json(await prisma.discordRoleMapping.findMany({orderBy:{createdAt:"desc"}}))}
-  catch{return NextResponse.json([])}
-}
-
-export async function POST(req:Request){
-  const type=req.headers.get("content-type")||"";
-  let discordRoleId="",appRole="";
-  if(type.includes("application/json")){
-    const b=await req.json(); discordRoleId=String(b.discordRoleId||""); appRole=String(b.appRole||"");
-  }else{
-    const f=await req.formData(); discordRoleId=String(f.get("discordRoleId")||""); appRole=String(f.get("appRole")||"");
-  }
-  if(!discordRoleId||!appRole)return NextResponse.json({error:"Discord role and Z6PD access are required."},{status:400});
-  try{
-    await prisma.discordRoleMapping.upsert({where:{discordRoleId},update:{appRole,syncEnabled:true},create:{discordRoleId,appRole,syncEnabled:true}});
-  }catch{
-    return NextResponse.json({error:"Database is not connected yet. Discord is online, but mappings cannot be saved until PostgreSQL is configured."},{status:503});
-  }
-  if(!type.includes("application/json"))return NextResponse.redirect(new URL("/discord",req.url),303);
-  return NextResponse.json({ok:true});
-}
+export async function GET(){const access=await requirePermission("discord.manage");if(!access)return NextResponse.json({error:"Forbidden"},{status:403});return NextResponse.json(await prisma.discordRoleMapping.findMany({orderBy:{createdAt:"desc"}}))}
+export async function POST(req:Request){const access=await requirePermission("discord.manage");if(!access)return NextResponse.json({error:"Forbidden"},{status:403});const type=req.headers.get("content-type")||"";let discordRoleId="",appRole="";if(type.includes("application/json")){const b=await req.json();discordRoleId=String(b.discordRoleId||"");appRole=String(b.appRole||"")}else{const f=await req.formData();discordRoleId=String(f.get("discordRoleId")||"");appRole=String(f.get("appRole")||"")}if(!discordRoleId||!appRole)return NextResponse.json({error:"Role and access required"},{status:400});const allowed=["OFFICER","SUPERVISOR","FTO","IA","COMMAND"];if(!allowed.includes(appRole))return NextResponse.json({error:"Invalid access role"},{status:400});const mapping=await prisma.discordRoleMapping.upsert({where:{discordRoleId},update:{appRole,syncEnabled:true},create:{discordRoleId,appRole,syncEnabled:true}});await prisma.auditLog.create({data:{actorId:access.user.id,action:"DISCORD_MAPPING_SAVED",entity:"DiscordRoleMapping",entityId:mapping.id,metadata:{discordRoleId,appRole}}});if(!type.includes("application/json"))return NextResponse.redirect(new URL("/discord",req.url),303);return NextResponse.json(mapping)}
+export async function DELETE(req:Request){const access=await requirePermission("discord.manage");if(!access)return NextResponse.json({error:"Forbidden"},{status:403});const id=new URL(req.url).searchParams.get("id");if(!id)return NextResponse.json({error:"id required"},{status:400});await prisma.discordRoleMapping.delete({where:{id}});await prisma.auditLog.create({data:{actorId:access.user.id,action:"DISCORD_MAPPING_DELETED",entity:"DiscordRoleMapping",entityId:id}});return NextResponse.json({ok:true})}
