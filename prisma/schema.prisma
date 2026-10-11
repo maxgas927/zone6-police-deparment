@@ -84,6 +84,7 @@ model Officer {
   hiredAt     DateTime        @default(now())
   patrols     PatrolSession[]
   reports     Report[]
+  trainingRecords TrainingRecord[]
 }
 
 model Rank {
@@ -140,4 +141,27 @@ model AuditLog {
   entityId  String?
   metadata  Json?
   createdAt DateTime @default(now())
+}
+
+model TrainingCourse {
+  id String @id @default(cuid())
+  name String @unique
+  description String? @db.Text
+  validDays Int?
+  active Boolean @default(true)
+  records TrainingRecord[]
+  createdAt DateTime @default(now())
+}
+
+model TrainingRecord {
+  id String @id @default(cuid())
+  officerId String
+  officer Officer @relation(fields: [officerId], references: [id], onDelete: Cascade)
+  courseId String
+  course TrainingCourse @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  issuedAt DateTime @default(now())
+  expiresAt DateTime?
+  notes String? @db.Text
+  createdAt DateTime @default(now())
+  @@unique([officerId, courseId])
 }
