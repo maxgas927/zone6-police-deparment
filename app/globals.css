@@ -44,3 +44,6 @@ nav a{text-decoration:none}
 
 /* Discord identity across Personnel */
 .rosteridentity{display:flex!important;align-items:center;gap:9px;min-width:0}.rosteridentity>span{min-width:0}.rosterpfp{width:30px;height:30px;flex:none;border-radius:8px}.rosterpfp.fallback{display:grid;place-items:center;background:#12345d;color:#70b1fa;font-style:normal;font-weight:900;border:1px solid #245a92}.rosteridentity .discordpfp{border:1px solid #285b91;box-shadow:0 0 10px #1677ff25}@media(max-width:720px){.rosterpfp{width:27px;height:27px}}
+
+/* Organization + Discord Sync V2 */
+.orgforms{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}.orgforms .opsform{margin:0}.syncbox{display:flex;align-items:center;gap:12px;margin:0 0 14px}.syncbox span{font-size:9px;color:#78a8da}@media(max-width:720px){.orgforms{grid-template-columns:1fr}.syncbox{align-items:stretch;flex-direction:column}}
