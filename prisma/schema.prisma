@@ -181,3 +181,20 @@ model LeaveRequest {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model FleetVehicle {
+  id String @id @default(cuid())
+  unitNumber String @unique
+  year Int?
+  make String
+  model String
+  plate String? @unique
+  status String @default("AVAILABLE")
+  mileage Int @default(0)
+  assignedOfficerId String?
+  notes String? @db.Text
+  lastServiceAt DateTime?
+  nextServiceMileage Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
