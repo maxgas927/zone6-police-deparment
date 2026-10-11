@@ -47,3 +47,6 @@ nav a{text-decoration:none}
 
 /* Organization + Discord Sync V2 */
 .orgforms{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}.orgforms .opsform{margin:0}.syncbox{display:flex;align-items:center;gap:12px;margin:0 0 14px}.syncbox span{font-size:9px;color:#78a8da}@media(max-width:720px){.orgforms{grid-template-columns:1fr}.syncbox{align-items:stretch;flex-direction:column}}
+
+/* Discord Webhook Center */
+.webhookinfo{margin-bottom:14px}.webhookinfo b{font-size:11px}.webhookinfo p{font-size:9px;color:#71849b;margin-bottom:0}.webhookgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.webhookcard>div{display:flex;justify-content:space-between;align-items:center}.webhookcard b{font-size:11px}.webhookcard p{font-family:monospace;font-size:8px;color:#5e748c}.webhookcard span{font-size:7px;padding:4px 7px;border-radius:999px}.hookon{background:#123629;color:#63d8a4}.hookoff{background:#3b1d23;color:#ff8e9a}.webhookmsg{grid-column:1/-1;color:#7eb5f2;font-size:9px;padding:8px}.webhookcard button:disabled{opacity:.4;cursor:not-allowed}@media(max-width:720px){.webhookgrid{grid-template-columns:1fr}}
