@@ -8,6 +8,7 @@ export const {handlers,auth,signIn,signOut}=NextAuth({
   trustHost:true,
   providers:[
     Discord({
+      issuer:"https://discord.com",
       authorization:"https://discord.com/oauth2/authorize?scope=identify+email+guilds"
     })
   ]
