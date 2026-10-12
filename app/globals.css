@@ -53,3 +53,6 @@ nav a{text-decoration:none}
 
 /* Organization hierarchy editor */
 .orgeditor{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}.orgwide{grid-column:1/-1}.orgeditrow{display:grid;grid-template-columns:1.3fr .7fr 1.3fr auto;gap:7px;padding:8px 0;border-top:1px solid #18283a}.orgeditrow input,.orgeditrow select{min-width:0;background:#09111b;color:#eaf2fc;border:1px solid #21344c;border-radius:7px;padding:9px}.orgforms{grid-template-columns:repeat(3,1fr)}@media(max-width:900px){.orgforms{grid-template-columns:1fr}.orgeditor{grid-template-columns:1fr}.orgwide{grid-column:auto}.orgeditrow{grid-template-columns:1fr}}
+
+/* Webhook editor + report review */
+.webhookcard input{width:100%;background:#09111b;color:#eaf2fc;border:1px solid #21344c;border-radius:7px;padding:10px;margin:7px 0}.webhookactions{display:flex;gap:7px;flex-wrap:wrap}.danger{border-color:#70313c!important;color:#ff9aa5!important}.reportreview{margin-top:14px;padding-top:14px;border-top:1px solid #20344c}.reportreview label{display:grid;gap:7px;font-size:9px;color:#88a0ba}.reportreview textarea{background:#09111b;color:#eef5fd;border:1px solid #263b55;border-radius:8px;padding:11px;resize:vertical}.reportstatus.approved{color:#66d9a3}.reportstatus.returned{color:#ff9d70}
