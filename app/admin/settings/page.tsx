@@ -27,13 +27,13 @@ export default async function Settings(){
       </div>
 
       <div className="profilefacts">
-        <span><small>Current Version</small><b>V8.10</b></span>
-        <span><small>Latest Change</small><b>V8.10 Production Release</b></span>
+        <span><small>Current Version</small><b>V9.2.1</b></span>
+        <span><small>Latest Change</small><b>Secure Reports & Personnel Controls</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
-        <span><small>Deployment</small><b>LIVE</b></span>
+        <span><small>Deployment</small><b>DEPLOYING</b></span>
       </div>
 
-      <p className="hint">V8.10 integrates personal notifications with read tracking, mobile navigation, Command readiness metrics, server-enforced report review workflow, department activity timeline, and final production validation. Production build and deployment verified; ongoing end-to-end permission testing remains recommended.</p>
+      <p className="hint">V9.2.1 hardens the V8 final features: report visibility limited to authors and reviewers, atomic supervisor decisions and officer resubmissions, separation of author and reviewer, locked automatic badge numbers, division validation, personnel access enforcement, and audited changes.</p>
     </section>
 
     <section className="panel">

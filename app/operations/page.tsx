@@ -2,13 +2,15 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {currentAccess} from "@/lib/authz";
 import {prisma} from "@/lib/prisma";
+import {can} from "@/lib/permissions";
 export const dynamic="force-dynamic";
 
 export default async function OperationsTimeline(){
   const access=await currentAccess();
   if(!access?.member||!access.appRoles.length)redirect("/");
+  const review=access.appRoles.some(role=>can(role,"reports.review"));
   const [reports,announcements,events]=await Promise.all([
-    prisma.report.findMany({where:{status:{in:["SUBMITTED","APPROVED"]}},orderBy:{updatedAt:"desc"},take:15,include:{officer:{include:{user:true}}}}),
+    prisma.report.findMany({where:review?{status:{in:["SUBMITTED","APPROVED"]}}:{officer:{userId:access.user.id},status:{in:["SUBMITTED","APPROVED"]}},orderBy:{updatedAt:"desc"},take:15,include:{officer:{include:{user:true}}}}),
     prisma.announcement.findMany({where:{published:true},orderBy:{createdAt:"desc"},take:15}),
     prisma.departmentEvent.findMany({where:{startsAt:{gte:new Date(Date.now()-7*86400000)}},orderBy:{startsAt:"asc"},take:15})
   ]);

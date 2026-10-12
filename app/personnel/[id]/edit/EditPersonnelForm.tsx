@@ -38,7 +38,7 @@ export default function EditPersonnelForm({
   return <form className="personnelform panel" onSubmit={submit}>
     <label>
       Badge Number
-      <input name="badgeNumber" required defaultValue={officer.badgeNumber}/>
+      <input value={officer.badgeNumber} disabled/><small>Unique badge generated automatically and locked to this personnel file.</small>
     </label>
     <label>
       Name

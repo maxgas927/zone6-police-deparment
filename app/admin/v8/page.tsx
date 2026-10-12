@@ -26,7 +26,8 @@ export default async function V8(){
     "V8.7 Administration V3 Command Readiness",
     "V8.8 Report Workflow Security",
     "V8.9 Department Activity Timeline",
-    "V8.10 Production Release"
+    "V8.10 Production Release",
+    "V9.2.1 Secure Reports & Personnel Controls"
   ];
 
   const planned=["Post-release end-to-end permissions and workflow regression testing"];
@@ -36,7 +37,7 @@ export default async function V8(){
     <div className="pagetop">
       <div>
         <p className="eyebrow">RELEASE STATUS</p>
-        <h1>Z6PD V8.10</h1>
+        <h1>Z6PD V9.2.1</h1>
         <p>V8.10 production build and deployment verified. Notifications, mobile navigation, Command readiness, report review safeguards and operations activity are included. CAD remains intentionally separate.</p>
       </div>
       <span className="connpill online">V8.10 LIVE</span>
