@@ -172,3 +172,9 @@ nav a{text-decoration:none}
  .v91-mobile-nav a.active{background:#16365a;color:#a6d4ff}
  .content{padding-bottom:94px!important}
 }
+
+.v91-permissions-table{overflow-x:auto}
+.v91-permissions-table table{width:100%;border-collapse:collapse;min-width:620px;font-size:11px}
+.v91-permissions-table th,.v91-permissions-table td{padding:12px;border-bottom:1px solid #23364d;text-align:center}
+.v91-permissions-table th:first-child{text-align:left}
+.v91-permissions-table td{color:#8dc4ff}
