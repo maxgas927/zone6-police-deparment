@@ -15,7 +15,7 @@ export default async function Settings(){
         <span><small>Current Version</small><b>V8.3.4</b></span>
         <span><small>Latest Change</small><b>1-Minute Full Department Discord Sync Worker</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
-        <span><small>Deployment</small><b>DEPLOYING</b></span>
+        <span><small>Deployment</small><b>LIVE</b></span>
       </div>
       <p className="hint">V8.3.4 now runs a server-side full-department Discord sync worker every minute while Z6PD is online. Every Discord-linked personnel record is rechecked for membership and mapped rank, including officers who are not actively using the website. Active signed-in users also continue their separate 30-second live refresh.</p>
     </section>
