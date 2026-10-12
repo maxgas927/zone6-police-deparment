@@ -502,3 +502,13 @@ model PersonnelChangeRequest {
  @@index([status,createdAt])
  @@index([officerId,status])
 }
+
+model RolePermissionOverride {
+ id String @id @default(cuid())
+ appRole String
+ permission String
+ allowed Boolean
+ updatedBy String?
+ updatedAt DateTime @updatedAt
+ @@unique([appRole,permission])
+}
