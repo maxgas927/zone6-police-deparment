@@ -30,7 +30,7 @@ export default async function Settings(){
         <span><small>Current Version</small><b>V8.3.8</b></span>
         <span><small>Latest Change</small><b>Automatic 5-Digit Badge Numbers</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
-        <span><small>Deployment</small><b>DEPLOYING</b></span>
+        <span><small>Deployment</small><b>LIVE</b></span>
       </div>
 
       <p className="hint">V8.3.8 automatically assigns every new officer a unique random 5-digit badge number from 10000 through 99999. Badge generation is server-side and collision checked before the personnel record is created.</p>
