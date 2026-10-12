@@ -3,6 +3,7 @@ import {redirect} from "next/navigation";
 import {currentAccess} from "@/lib/authz";
 import {prisma} from "@/lib/prisma";
 import PersonnelApprovalSettings from "./PersonnelApprovalSettings";
+import DiscordCommandsSettings from "./DiscordCommandsSettings";
 
 export default async function Settings(){
   const access=await currentAccess();
@@ -40,6 +41,7 @@ export default async function Settings(){
     </section>
 
     <PersonnelApprovalSettings initial={policy?.allowCommandSelfReview??false}/>
+    <DiscordCommandsSettings/>
     <section className="panel">
       <h3>Automatic Personnel Onboarding</h3>
       <p className="hint">Users must have a Discord-linked Z6PD account and a server nickname in the format Callsign | Title | Name, for example 1A-03 | Dept. Chief | Davion. Once detected, Z6PD creates and maintains the personnel file automatically.</p>
