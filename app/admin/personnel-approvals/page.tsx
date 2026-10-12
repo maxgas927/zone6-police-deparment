@@ -14,7 +14,7 @@ export default async function PersonnelApprovals(){
   prisma.personnelChangeRequest.findMany({orderBy:{createdAt:"desc"},take:100})
  ]);
  return <main className="subpage"><Link href="/admin" className="back">← Administration</Link>
- <div className="pagetop"><div><p className="eyebrow">V9.3 · COMMAND WORKFLOWS</p><h1>Personnel Approvals</h1><p>Request and review promotions, demotions and division transfers. The requester cannot approve their own request.</p></div></div>
- <section className="panel"><p className="hint">Discord remains the authority for rank assignments. Approved website rank changes may be replaced by the next Discord role synchronization unless the corresponding Discord rank role is updated.</p></section>
+ <div className="pagetop"><div><p className="eyebrow">V9.9.2 · COMMAND WORKFLOWS</p><h1>Personnel Approvals</h1><p>Request and review promotions, demotions and division transfers. The requester cannot approve their own request.</p></div></div>
+ <section className="panel"><p className="hint">When Command approves a promotion or demotion, the connected Discord bot assigns the new mapped rank role and removes outdated mapped rank roles. The bot needs Manage Roles permission and its role must be above all police ranks. Division transfers currently update the website assignment only.</p></section>
  <ApprovalConsole officers={officers} ranks={ranks} divisions={divisions} requests={requests} userId={a.user.id}/></main>;
 }
