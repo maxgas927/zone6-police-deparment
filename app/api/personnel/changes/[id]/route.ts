@@ -15,7 +15,10 @@ export async function PATCH(req:Request,{params}:{params:Promise<{id:string}>}){
  if(!status||note.length>4000||(status==="DENIED"&&!note))return NextResponse.json({error:"Invalid decision or missing denial reason"},{status:400});
  const request=await prisma.personnelChangeRequest.findUnique({where:{id}});
  if(!request)return NextResponse.json({error:"Request not found"},{status:404});
- if(request.requestedBy===a.user.id)return NextResponse.json({error:"A different command member must approve this request"},{status:403});
+ if(request.requestedBy===a.user.id){
+  const policy=await prisma.personnelApprovalPolicy.findUnique({where:{id:"default"}});
+  if(!policy?.allowCommandSelfReview)return NextResponse.json({error:"Self-review is disabled in Personnel Approval Settings"},{status:403});
+ }
  if(!["PENDING","SYNC_FAILED"].includes(request.status))return NextResponse.json({error:"Request already reviewed"},{status:409});
  let claimed=false;
  if(status==="APPROVED"&&request.kind!=="TRANSFER"){
