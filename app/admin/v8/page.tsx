@@ -15,7 +15,8 @@ export default async function V8(){
     "V8.3.2 Discord Rank Authority & Access Lockdown",
     "V8.3.3 30-Second Active User Discord Sync",
     "V8.3.4 1-Minute Full Department Discord Sync",
-    "V8.3.5 Live Discord Sync Countdown"
+    "V8.3.5 Live Discord Sync Countdown",
+    "V8.3.6 Discord Username Callsign Sync"
   ];
   const planned=[
     "V8.4 Officer Home V3",
@@ -29,7 +30,7 @@ export default async function V8(){
 
   return <main className="subpage narrow">
     <Link href="/admin" className="back">← Administration</Link>
-    <div className="pagetop"><div><p className="eyebrow">RELEASE STATUS</p><h1>Z6PD V8.3.5</h1><p>Discord-authoritative rank with automatic full-department synchronization every minute and a live countdown to the next sync. CAD remains intentionally separate.</p></div><span className="connpill online">V8.3.5</span></div>
+    <div className="pagetop"><div><p className="eyebrow">RELEASE STATUS</p><h1>Z6PD V8.3.6</h1><p>Discord-authoritative rank and callsign with automatic department synchronization. CAD remains intentionally separate.</p></div><span className="connpill online">V8.3.6</span></div>
     <section className="panel"><h3>Included in this release</h3>{shipped.map(x=><div className="releaseitem" key={x}><b>✓</b><span>{x}</span></div>)}</section>
     <section className="panel"><h3>Next in V8</h3>{planned.map(x=><div className="releaseitem" key={x}><b>→</b><span>{x}</span></div>)}</section>
   </main>;

@@ -21,7 +21,7 @@ export default async function Page({searchParams}:{searchParams:Promise<{id?:str
 
   return <main className="subpage narrow">
     <Link href={"/personnel/"+id} className="back">← Officer Profile</Link>
-    <div className="pagetop"><div><p className="eyebrow">PERSONNEL MANAGEMENT</p><h1>Edit Personnel</h1><p>Rank is controlled by Discord. Update local personnel details below.</p></div></div>
+    <div className="pagetop"><div><p className="eyebrow">PERSONNEL MANAGEMENT</p><h1>Edit Personnel</h1><p>Rank and callsign are controlled by Discord. Update local personnel details below.</p></div></div>
     <EditPersonnelForm officer={officer} divisions={divisions} subdivisions={subdivisions}/>
   </main>;
 }

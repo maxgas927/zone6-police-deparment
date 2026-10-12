@@ -20,7 +20,7 @@ export default function EditPersonnelForm({officer,divisions,subdivisions}:{offi
 
   return <form className="personnelform panel" onSubmit={submit}>
     <label>Badge Number<input name="badgeNumber" required defaultValue={officer.badgeNumber}/></label>
-    <label>Callsign<input name="callsign" defaultValue={officer.callsign||""}/></label>
+    <label>Callsign<input value={officer.callsign||"Unassigned"} disabled/><small>Managed automatically from the officer&apos;s Discord username and updated during Discord sync.</small></label>
     <label>Rank<input value={officer.rank?.name||"Unassigned"} disabled/><small>Managed automatically from the officer&apos;s mapped Discord role.</small></label>
     <label>Division<select name="divisionId" defaultValue={officer.divisionId||""}><option value="">No Division</option>{divisions.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></label>
     <label>Sub-Division<select name="subdivisionId" defaultValue={officer.subdivisionId||""}><option value="">No Sub-Division</option>{subdivisions.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></label>

@@ -11,7 +11,7 @@ export async function GET(){
     ok:true,
     member:access.member,
     appRoles:access.appRoles,
-    rankChanged:access.rankSyncChanged,
+    personnelChanged:access.personnelSyncChanged,
     accessError:"accessError" in access?access.accessError:false
   });
 }

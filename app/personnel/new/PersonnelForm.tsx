@@ -21,7 +21,7 @@ export default function PersonnelForm({users,divisions}:{users:{id:string;name:s
   return <form className="personnelform panel" onSubmit={submit}>
     <label>Discord User<select name="userId" required defaultValue=""><option value="" disabled>Select linked user</option>{users.map(x=><option key={x.id} value={x.id}>{x.name||"Discord User"}{x.image?" · Discord profile linked":""}</option>)}</select></label>
     <label>Badge Number<input name="badgeNumber" required placeholder="106"/></label>
-    <label>Callsign<input name="callsign" placeholder="2A-06"/></label>
+    <label>Callsign<input value="Assigned automatically from Discord username" disabled/><small>Callsign will follow the officer&apos;s Discord username and update on every Discord re-sync.</small></label>
     <label>Rank<input value="Assigned automatically from Discord" disabled/><small>The highest-priority mapped department rank on this user&apos;s Discord roles will be used.</small></label>
     <label>Division<select name="divisionId"><option value="">No Division</option>{divisions.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></label>
     <div className="formactions"><button className="primary" disabled={busy}>{busy?"Creating...":"Create Personnel Record"}</button></div>

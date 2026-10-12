@@ -17,7 +17,7 @@ export default async function NewPersonnel(){
 
   return <main className="subpage narrow">
     <Link href="/personnel" className="back">← Department Roster</Link>
-    <div className="pagetop"><div><p className="eyebrow">PERSONNEL MANAGEMENT</p><h1>Add Personnel</h1><p>Create an officer record from an existing Discord-linked Z6PD account. Rank is assigned from Discord automatically.</p></div></div>
+    <div className="pagetop"><div><p className="eyebrow">PERSONNEL MANAGEMENT</p><h1>Add Personnel</h1><p>Create an officer record from an existing Discord-linked Z6PD account. Rank and callsign are assigned from Discord automatically.</p></div></div>
     {users.length?<PersonnelForm users={users} divisions={divisions}/>:<div className="panel empty">No unassigned Discord users are available. The officer must sign in to Z6PD with Discord first.</div>}
   </main>;
 }

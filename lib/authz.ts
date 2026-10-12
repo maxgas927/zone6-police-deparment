@@ -1,7 +1,7 @@
 import {auth} from "@/auth";
 import {prisma} from "@/lib/prisma";
 import {resolveAccess} from "@/lib/discord";
-import {syncOfficerRankFromRoles} from "@/lib/discord-sync";
+import {syncOfficerFromDiscordData} from "@/lib/discord-sync";
 import {can,type Permission} from "@/lib/permissions";
 
 export async function currentAccess(){
@@ -14,12 +14,22 @@ export async function currentAccess(){
 
   try{
     const access=await resolveAccess(account.providerAccountId);
-    if(!access.member)return {session,user,discordId:account.providerAccountId,...access,rankSyncChanged:false};
-    const rankSync=await syncOfficerRankFromRoles(user.id,access.roles);
-    return {session,user,discordId:account.providerAccountId,...access,rankSyncChanged:rankSync.changed};
+    if(!access.member)return {session,user,discordId:account.providerAccountId,...access,personnelSyncChanged:false};
+    const personnelSync=await syncOfficerFromDiscordData(user.id,access.roles,access.username);
+    return {session,user,discordId:account.providerAccountId,...access,personnelSyncChanged:personnelSync.changed};
   }catch(error){
     console.error("DISCORD_ACCESS_CHECK_FAILED",error);
-    return {session,user,discordId:account.providerAccountId,member:false,roles:[] as string[],appRoles:[] as string[],accessError:true,rankSyncChanged:false};
+    return {
+      session,
+      user,
+      discordId:account.providerAccountId,
+      member:false,
+      roles:[] as string[],
+      appRoles:[] as string[],
+      username:null,
+      accessError:true,
+      personnelSyncChanged:false
+    };
   }
 }
 

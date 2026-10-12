@@ -12,11 +12,28 @@ export async function PATCH(req:Request,{params}:{params:Promise<{id:string}>}){
   const dutyStatus=["OFF_DUTY","AVAILABLE","ON_DUTY","BUSY"].includes(b.dutyStatus)?b.dutyStatus:undefined;
 
   try{
-    const officer=await prisma.officer.update({where:{id},data:{badgeNumber:String(b.badgeNumber||"").trim(),callsign:b.callsign?String(b.callsign).trim():null,divisionId:b.divisionId||null,subdivisionId:b.subdivisionId||null,status,dutyStatus}});
-    await prisma.auditLog.create({data:{actorId:a.user.id,action:"PERSONNEL_UPDATED",entity:"Officer",entityId:id,metadata:{badgeNumber:officer.badgeNumber,status:officer.status,dutyStatus:officer.dutyStatus,rankSource:"DISCORD"}}});
+    const officer=await prisma.officer.update({
+      where:{id},
+      data:{
+        badgeNumber:String(b.badgeNumber||"").trim(),
+        divisionId:b.divisionId||null,
+        subdivisionId:b.subdivisionId||null,
+        status,
+        dutyStatus
+      }
+    });
+    await prisma.auditLog.create({
+      data:{
+        actorId:a.user.id,
+        action:"PERSONNEL_UPDATED",
+        entity:"Officer",
+        entityId:id,
+        metadata:{badgeNumber:officer.badgeNumber,status:officer.status,dutyStatus:officer.dutyStatus,rankSource:"DISCORD",callsignSource:"DISCORD_USERNAME"}
+      }
+    });
     return NextResponse.json(officer);
   }catch(error){
     console.error("PERSONNEL_UPDATE_FAILED",error);
-    return NextResponse.json({error:"Could not update personnel record. Check badge and callsign uniqueness."},{status:500});
+    return NextResponse.json({error:"Could not update personnel record. Check badge uniqueness."},{status:500});
   }
 }

@@ -27,7 +27,7 @@ export default function AutoDiscordSync(){
         const accessChanged=lastSignature.current!==null&&lastSignature.current!==signature;
         lastSignature.current=signature;
 
-        if(firstSync.current||accessChanged||data.rankChanged){
+        if(firstSync.current||accessChanged||data.personnelChanged){
           firstSync.current=false;
           router.refresh();
         }
