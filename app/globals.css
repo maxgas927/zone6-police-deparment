@@ -92,3 +92,27 @@ nav a{text-decoration:none}
 .officerannouncement{border-top:1px solid #182333;padding:12px 0}.officerannouncement:first-of-type{border-top:0}.officerannouncement span{display:flex;align-items:center;justify-content:space-between;gap:12px}.officerannouncement b{font-size:10px}.officerannouncement small{font-size:8px;color:#61748b}.officerannouncement p{font-size:9px;line-height:1.55;color:#8798ad;margin:6px 0 0}
 @media(max-width:900px){.officerhomegrid{grid-template-columns:1fr}.officerhomestats{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.officerhomehero{align-items:flex-start;flex-direction:column}.officerhomestatus{text-align:left}.officerhomestats{grid-template-columns:1fr 1fr}.officerquickactions{grid-template-columns:1fr}}
+
+/* V8.6: independently scrollable, collapsible department navigation */
+.z6-sidebar{z-index:80;display:flex;flex-direction:column;overflow:hidden}
+.z6-sidebar .sidebar-controls{flex:none;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 7px 12px;color:#647f9d;font-size:9px;letter-spacing:1px}
+.z6-sidebar .sidebar-controls button{display:grid;place-items:center;border:1px solid #243953;background:#101e30;color:#89b8ef;border-radius:7px;width:31px;height:31px;cursor:pointer}
+.z6-sidebar .sidebar-scroll{min-height:0;flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#34577a #0a1019}
+.z6-sidebar .sidebar-scroll nav{display:flex;flex-direction:column;padding-top:14px;padding-bottom:20px}
+.z6-sidebar .sidebar-scroll nav a{flex:none;min-height:40px;height:auto;padding-top:8px;padding-bottom:8px}
+.z6-sidebar .sidebar-scroll .sidefoot{margin-top:16px}
+.sidebar-mobile-trigger,.sidebar-backdrop,.sidebar-close{display:none!important}
+@media(min-width:721px){.z6-sidebar.sidebar-collapsed{width:72px;padding-left:8px;padding-right:8px}.z6-sidebar.sidebar-collapsed .sidebar-controls span,.z6-sidebar.sidebar-collapsed .brand>div:last-child,.z6-sidebar.sidebar-collapsed nav a span,.z6-sidebar.sidebar-collapsed nav em,.z6-sidebar.sidebar-collapsed .sidefoot div{display:none}.z6-sidebar.sidebar-collapsed nav a{justify-content:center;padding-left:4px;padding-right:4px}.z6-sidebar.sidebar-collapsed .brand{justify-content:center}.z6-sidebar.sidebar-collapsed .sidebar-controls{justify-content:center}}
+@media(max-width:720px){
+  .sidebar-mobile-trigger{display:flex!important;position:fixed;left:12px;top:12px;z-index:78;align-items:center;gap:6px;padding:9px 12px;border:1px solid #34577a;border-radius:9px;background:#0e223b;color:#c5e0ff;box-shadow:0 4px 22px #0008;font-size:12px}
+  .sidebar-backdrop{display:block!important;position:fixed;inset:0;z-index:79;border:0;background:#000a}
+  .z6-sidebar{width:min(290px,85vw)!important;transform:translateX(-110%);transition:transform .22s ease;box-shadow:12px 0 30px #0009;padding:18px 12px!important}
+  .z6-sidebar.sidebar-open{transform:translateX(0)}
+  .z6-sidebar .sidebar-controls span{display:block}
+  .z6-sidebar .sidebar-collapse{display:none!important}
+  .z6-sidebar .sidebar-close{display:grid!important}
+  .z6-sidebar .brand>div:last-child,.z6-sidebar nav a span,.z6-sidebar nav em,.z6-sidebar .sidefoot div{display:block!important}
+  .z6-sidebar nav a{justify-content:flex-start!important;padding:9px 11px!important}
+  .z6-sidebar .sidefoot{display:flex}
+  .content{margin-left:0!important;width:100%!important;padding-top:44px!important}
+}
