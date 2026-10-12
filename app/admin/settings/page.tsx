@@ -27,13 +27,13 @@ export default async function Settings(){
       </div>
 
       <div className="profilefacts">
-        <span><small>Current Version</small><b>V8.6</b></span>
-        <span><small>Latest Change</small><b>Navigation & Mobile Sidebar</b></span>
+        <span><small>Current Version</small><b>V8.10</b></span>
+        <span><small>Latest Change</small><b>V8 Production Candidate</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
-        <span><small>Deployment</small><b>DEPLOYING</b></span>
+        <span><small>Deployment</small><b>VERIFYING</b></span>
       </div>
 
-      <p className="hint">V8.6 improves navigation with an independently scrollable sidebar, a desktop collapse control, and a slide-out mobile drawer so all department sections remain accessible.</p>
+      <p className="hint">V8.10 integrates personal notifications with read tracking, mobile navigation, Command readiness metrics, server-enforced report review workflow, department activity timeline, and final production validation. Deployment and security checks are in progress.</p>
     </section>
 
     <section className="panel">

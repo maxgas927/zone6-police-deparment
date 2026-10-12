@@ -21,26 +21,25 @@ export default async function V8(){
     "V8.3.8 Automatic 5-Digit Badge Numbers",
     "V8.3.9 Automatic Personnel File Creation",
     "V8.4 Officer Home V3",
-    "V8.6 Scrollable Sidebar & Mobile Drawer"
+    "V8.5 Notification Center",
+    "V8.6 Scrollable Sidebar & Mobile Drawer",
+    "V8.7 Administration V3 Command Readiness",
+    "V8.8 Report Workflow Security",
+    "V8.9 Department Activity Timeline",
+    "V8.10 Production Release Candidate"
   ];
 
-  const planned=[
-    "V8.5 Notification Center",
-    "V8.7 Administration V3",
-    "V8.8 Security & Audit",
-    "V8.9 Operations Polish",
-    "V8.10 Production Release"
-  ];
+  const planned=["V8.10 Production verification and final regression checks"];
 
   return <main className="subpage narrow">
     <Link href="/admin" className="back">← Administration</Link>
     <div className="pagetop">
       <div>
         <p className="eyebrow">RELEASE STATUS</p>
-        <h1>Z6PD V8.6</h1>
-        <p>Scrollable and collapsible department navigation with a slide-out mobile menu; remaining V8 features are being developed. CAD remains intentionally separate.</p>
+        <h1>Z6PD V8.10</h1>
+        <p>V8 feature-complete release candidate: notifications, mobile navigation, Command readiness, report security and operations activity. Final production verification is underway. CAD remains intentionally separate.</p>
       </div>
-      <span className="connpill online">V8.6</span>
+      <span className="connpill online">V8.10 RC</span>
     </div>
 
     <section className="panel">
