@@ -16,11 +16,12 @@ export async function getDepartmentNotices(userId:string,roles:string[]){
   const officer=await prisma.officer.findUnique({where:{userId}});
   const supervisor=roles.some(role=>can(role,"reports.review"));
   const manageLeave=roles.includes("SUPERVISOR")||roles.includes("COMMAND");
+  const trainingSupervisor=roles.some(role=>can(role,"training.manage"))||manageLeave;
   const now=new Date();
   const thirtyDaysAgo=new Date(now.getTime()-30*86400000);
   const soon=new Date(now.getTime()+30*86400000);
 
-  const [reports,leaves,documents,announcements,certifications]=await Promise.all([
+  const [reports,leaves,documents,announcements,certifications,teamCertifications]=await Promise.all([
     prisma.report.findMany({
       where:supervisor?{status:"SUBMITTED"}:{officerId:officer?.id||"none",status:"RETURNED"},
       orderBy:{updatedAt:"desc"},take:30
@@ -40,7 +41,8 @@ export async function getDepartmentNotices(userId:string,roles:string[]){
     officer?prisma.trainingRecord.findMany({
       where:{officerId:officer.id,expiresAt:{lte:soon}},
       include:{course:true},orderBy:{expiresAt:"asc"},take:30
-    }):Promise.resolve([])
+    }):Promise.resolve([]),
+    trainingSupervisor?prisma.trainingRecord.findMany({where:{expiresAt:{lte:soon},officerId:{not:officer?.id||"none"}},include:{course:true,officer:{include:{user:true}}},orderBy:{expiresAt:"asc"},take:30}):Promise.resolve([])
   ]);
 
   const notices:Omit<DepartmentNotice,"read">[]=[
@@ -68,6 +70,13 @@ export async function getDepartmentNotices(userId:string,roles:string[]){
       title:item.title,detail:item.body.slice(0,180),
       href:"/announcements",category:"ANNOUNCEMENT" as const,
       createdAt:item.createdAt,urgent:item.priority==="HIGH"||item.priority==="URGENT"
+    })),
+    ...teamCertifications.map(item=>({
+      key:"team-training:"+item.id+":"+item.expiresAt?.toISOString(),
+      title:item.expiresAt&&item.expiresAt<now?"Officer certification expired":"Officer certification expiring",
+      detail:(item.officer.user.name||item.officer.callsign||"Officer")+" · "+item.course.name+" · "+(item.expiresAt?.toLocaleDateString()||""),
+      href:"/personnel/"+item.officerId,category:"TRAINING" as const,
+      createdAt:item.expiresAt||now,urgent:true
     })),
     ...certifications.map(item=>({
       key:"training:"+item.id+":"+item.expiresAt?.toISOString(),

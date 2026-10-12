@@ -95,6 +95,7 @@ model Officer {
   evidenceItems EvidenceItem[]
   shifts ShiftAssignment[]
   commendations Commendation[]
+  supervisorNotes PersonnelNote[]
 }
 
 model Rank {
@@ -472,4 +473,15 @@ model NotificationRead {
   readAt DateTime @default(now())
   @@unique([userId,key])
   @@index([userId,readAt])
+}
+
+model PersonnelNote {
+  id String @id @default(cuid())
+  officerId String
+  officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
+  authorId String
+  authorName String
+  body String @db.Text
+  createdAt DateTime @default(now())
+  @@index([officerId,createdAt])
 }
