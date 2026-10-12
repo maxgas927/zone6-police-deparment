@@ -12,12 +12,12 @@ export default async function Settings(){
     <section className="panel">
       <div className="paneltitle"><div><b>Release Status</b><span>Updated with every Z6PD application change</span></div><Link href="/admin/v8" className="primary">Full Release Notes</Link></div>
       <div className="profilefacts">
-        <span><small>Current Version</small><b>V8.3.4</b></span>
-        <span><small>Latest Change</small><b>1-Minute Full Department Discord Sync Worker</b></span>
+        <span><small>Current Version</small><b>V8.3.5</b></span>
+        <span><small>Latest Change</small><b>Live Discord Sync Countdown</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
-        <span><small>Deployment</small><b>LIVE</b></span>
+        <span><small>Deployment</small><b>DEPLOYING</b></span>
       </div>
-      <p className="hint">V8.3.4 now runs a server-side full-department Discord sync worker every minute while Z6PD is online. Every Discord-linked personnel record is rechecked for membership and mapped rank, including officers who are not actively using the website. Active signed-in users also continue their separate 30-second live refresh.</p>
+      <p className="hint">V8.3.5 adds a live countdown to the next full-department Discord sync. The timer is tied to the server-side one-minute sync worker and refreshes against the server so Command can see exactly how long remains until the next automatic department sync.</p>
     </section>
     <section className="panel"><h3>Configuration Center</h3><p className="hint">Map department ranks to Discord roles under Administration → Ranks & Divisions. Permission groups remain managed in the Discord Control Center.</p></section>
   </main>;
