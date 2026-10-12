@@ -19,11 +19,11 @@ export default async function V8(){
     "V8.3.6 Discord Username Callsign Sync",
     "V8.3.7 Discord Server Nickname Identity Sync",
     "V8.3.8 Automatic 5-Digit Badge Numbers",
-    "V8.3.9 Automatic Personnel File Creation"
+    "V8.3.9 Automatic Personnel File Creation",
+    "V8.4 Officer Home V3"
   ];
 
   const planned=[
-    "V8.4 Officer Home V3",
     "V8.5 Notification Center",
     "V8.6 Mobile V3",
     "V8.7 Administration V3",
@@ -37,10 +37,10 @@ export default async function V8(){
     <div className="pagetop">
       <div>
         <p className="eyebrow">RELEASE STATUS</p>
-        <h1>Z6PD V8.3.9</h1>
-        <p>Automatic personnel onboarding from Discord with generated badge, synced identity and mapped rank. CAD remains intentionally separate.</p>
+        <h1>Z6PD V8.4</h1>
+        <p>Personalized Officer Home V3 with live duty status, action center, assignments, training, resources and officer activity. CAD remains intentionally separate.</p>
       </div>
-      <span className="connpill online">V8.3.9</span>
+      <span className="connpill online">V8.4</span>
     </div>
 
     <section className="panel">
