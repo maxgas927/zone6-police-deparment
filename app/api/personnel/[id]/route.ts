@@ -21,9 +21,10 @@ export async function PATCH(req:Request,{params}:{params:Promise<{id:string}>}){
   if(!sub||sub.divisionId!==divisionId)return NextResponse.json({error:"Subdivision must belong to selected division."},{status:400});
  }
  const officer=await prisma.$transaction(async tx=>{
-  const updated=await tx.officer.update({where:{id},data:{divisionId,subdivisionId,status:status as typeof current.status,dutyStatus:dutyStatus as typeof current.dutyStatus}});
+  const change=await tx.officer.updateMany({where:{id,divisionId:current.divisionId,subdivisionId:current.subdivisionId,status:current.status,dutyStatus:current.dutyStatus},data:{divisionId,subdivisionId,status:status as typeof current.status,dutyStatus:dutyStatus as typeof current.dutyStatus}});if(change.count!==1)return null;const updated=await tx.officer.findUnique({where:{id}});
   await tx.auditLog.create({data:{actorId:a.user.id,action:"PERSONNEL_UPDATED",entity:"Officer",entityId:id,metadata:{before:{divisionId:current.divisionId,subdivisionId:current.subdivisionId,status:current.status,dutyStatus:current.dutyStatus},after:{divisionId,subdivisionId,status,dutyStatus},badgeNumber:current.badgeNumber,identitySource:"DISCORD"}}});
   return updated;
  });
+ if(!officer)return NextResponse.json({error:"Personnel record changed. Refresh and try again."},{status:409});
  return NextResponse.json(officer);
 }
