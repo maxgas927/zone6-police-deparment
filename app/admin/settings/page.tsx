@@ -27,13 +27,13 @@ export default async function Settings(){
       </div>
 
       <div className="profilefacts">
-        <span><small>Current Version</small><b>V9.2.2</b></span>
-        <span><small>Latest Change</small><b>Personnel Files V4 & Command Analytics</b></span>
+        <span><small>Current Version</small><b>V9.2.3</b></span>
+        <span><small>Latest Change</small><b>Discord V4, Global Search & Mobile Release</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
         <span><small>Deployment</small><b>DEPLOYING</b></span>
       </div>
 
-      <p className="hint">V9.2.2 adds confidential, audit-logged supervisor notes to personnel files; detailed officer activity timelines; team certification alerts; enhanced supervisor review and leave queues; division staffing, patrol and report analytics; and improved training access controls.</p>
+      <p className="hint">V9.2.3 completes the V8 final enhancements with Discord 429 backoff and member request deduplication, safe role-mapping deletion audit, permission-aware category search, a slide-out navigation menu on every department page, mobile bottom navigation, an operational health endpoint, and GitHub TypeScript checks.</p>
     </section>
 
     <section className="panel">

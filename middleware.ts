@@ -6,6 +6,7 @@ export function middleware(req:NextRequest){
   if(
     p==="/login"||
     p.startsWith("/api/auth")||
+    p==="/api/health"||
     p==="/api/discord/sync/full"||
     p.startsWith("/_next")||
     p==="/favicon.ico"
