@@ -21,7 +21,7 @@ export async function GET(){
 
   return NextResponse.json(
     await prisma.officer.findMany({
-      include:{user:true,rank:true,division:true},
+      include:{user:{select:{id:true,name:true,image:true}},rank:true,division:true},
       orderBy:{badgeNumber:"asc"}
     })
   );
