@@ -12,6 +12,7 @@ export async function GET(){
     member:access.member,
     appRoles:access.appRoles,
     personnelChanged:access.personnelSyncChanged,
+    personnelFileCreated:access.personnelFileCreated,
     accessError:"accessError" in access?access.accessError:false
   });
 }

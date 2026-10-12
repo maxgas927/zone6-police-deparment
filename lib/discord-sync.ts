@@ -1,3 +1,5 @@
+import {randomInt} from "node:crypto";
+import {Prisma} from "@prisma/client";
 import {prisma} from "@/lib/prisma";
 import {getGuildMember} from "@/lib/discord";
 
@@ -25,30 +27,137 @@ export async function getDiscordRankForRoles(roles:string[]){
   });
 }
 
+async function generateUniqueBadgeNumber(){
+  for(let attempt=0;attempt<50;attempt++){
+    const badge=String(randomInt(10000,100000));
+    const exists=await prisma.officer.findUnique({
+      where:{badgeNumber:badge},
+      select:{id:true}
+    });
+    if(!exists)return badge;
+  }
+  throw new Error("Unable to generate a unique badge number.");
+}
+
+async function createOfficerFromDiscordData(
+  userId:string,
+  roles:string[],
+  nickname:string
+){
+  const identity=parsePersonnelNickname(nickname);
+  if(!identity){
+    return {
+      officer:false,
+      created:false,
+      changed:false,
+      skippedReason:"INVALID_NICKNAME" as const
+    };
+  }
+
+  const [nextRank,badgeNumber]=await Promise.all([
+    getDiscordRankForRoles(roles),
+    generateUniqueBadgeNumber()
+  ]);
+
+  try{
+    const officer=await prisma.$transaction(async tx=>{
+      await tx.user.update({
+        where:{id:userId},
+        data:{name:identity.name}
+      });
+
+      const created=await tx.officer.create({
+        data:{
+          userId,
+          badgeNumber,
+          callsign:identity.callsign,
+          rankId:nextRank?.id||null
+        }
+      });
+
+      if(nextRank){
+        await tx.promotionHistory.create({
+          data:{
+            officerId:created.id,
+            fromRank:null,
+            toRank:nextRank.name,
+            reason:"Initial Discord rank assignment",
+            approvedBy:"DISCORD_SYNC"
+          }
+        });
+      }
+
+      await tx.auditLog.create({
+        data:{
+          actorId:userId,
+          action:"PERSONNEL_AUTO_CREATED",
+          entity:"Officer",
+          entityId:created.id,
+          metadata:{
+            badgeNumber,
+            badgeSource:"AUTO_GENERATED_5_DIGIT",
+            callsign:identity.callsign,
+            name:identity.name,
+            nickname,
+            rank:nextRank?.name||null,
+            source:"DISCORD_JOIN_SYNC"
+          }
+        }
+      });
+
+      return created;
+    });
+
+    return {
+      officer:true,
+      officerId:officer.id,
+      created:true,
+      changed:true,
+      rank:nextRank?.name||null,
+      callsign:identity.callsign,
+      name:identity.name,
+      badgeNumber
+    };
+  }catch(error){
+    if(error instanceof Prisma.PrismaClientKnownRequestError&&error.code==="P2002"){
+      const existing=await prisma.officer.findUnique({where:{userId}});
+      if(existing){
+        return {
+          officer:true,
+          officerId:existing.id,
+          created:false,
+          changed:false
+        };
+      }
+    }
+    throw error;
+  }
+}
+
 export async function syncOfficerFromDiscordData(
   userId:string,
   roles:string[],
   nickname:string|null|undefined
 ){
-  const nextRank=await getDiscordRankForRoles(roles);
-  const identity=parsePersonnelNickname(nickname);
   const officer=await prisma.officer.findUnique({
     where:{userId},
     include:{rank:true,user:true}
   });
 
   if(!officer){
-    return {
-      officer:false,
-      rank:nextRank?.name||null,
-      callsign:identity?.callsign||null,
-      name:identity?.name||null,
-      changed:false,
-      rankChanged:false,
-      callsignChanged:false,
-      nameChanged:false
-    };
+    if(!nickname){
+      return {
+        officer:false,
+        created:false,
+        changed:false,
+        skippedReason:"NO_NICKNAME" as const
+      };
+    }
+    return createOfficerFromDiscordData(userId,roles,nickname);
   }
+
+  const nextRank=await getDiscordRankForRoles(roles);
+  const identity=parsePersonnelNickname(nickname);
 
   const nextRankId=nextRank?.id||null;
   const nextCallsign=identity?.callsign??officer.callsign;
@@ -61,6 +170,8 @@ export async function syncOfficerFromDiscordData(
   if(!rankChanged&&!callsignChanged&&!nameChanged){
     return {
       officer:true,
+      officerId:officer.id,
+      created:false,
       rank:nextRank?.name||null,
       callsign:nextCallsign,
       name:nextName,
@@ -121,6 +232,8 @@ export async function syncOfficerFromDiscordData(
 
   return {
     officer:true,
+    officerId:officer.id,
+    created:false,
     rank:nextRank?.name||null,
     callsign:nextCallsign,
     name:nextName,

@@ -26,7 +26,8 @@ export async function currentAccess(){
         user,
         discordId:account.providerAccountId,
         ...access,
-        personnelSyncChanged:false
+        personnelSyncChanged:false,
+        personnelFileCreated:false
       };
     }
 
@@ -41,7 +42,8 @@ export async function currentAccess(){
       user,
       discordId:account.providerAccountId,
       ...access,
-      personnelSyncChanged:personnelSync.changed
+      personnelSyncChanged:personnelSync.changed,
+      personnelFileCreated:personnelSync.created===true
     };
   }catch(error){
     console.error("DISCORD_ACCESS_CHECK_FAILED",error);
@@ -55,7 +57,8 @@ export async function currentAccess(){
       username:null,
       nickname:null,
       accessError:true,
-      personnelSyncChanged:false
+      personnelSyncChanged:false,
+      personnelFileCreated:false
     };
   }
 }
