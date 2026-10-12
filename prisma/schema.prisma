@@ -150,6 +150,10 @@ model DiscordWebhook {
   channel String @unique
   url String @db.Text
   updatedBy String?
+  enabled Boolean @default(true)
+  events Json?
+  lastSuccessAt DateTime?
+  lastError String? @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
