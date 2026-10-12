@@ -1,9 +1,19 @@
 export const dynamic="force-dynamic";
+import {randomInt} from "node:crypto";
 import {prisma} from "@/lib/prisma";
 import {NextResponse} from "next/server";
 import {requirePermission} from "@/lib/authz";
 import {getGuildMember} from "@/lib/discord";
 import {getDiscordRankForRoles,parsePersonnelNickname} from "@/lib/discord-sync";
+
+async function generateBadgeNumber(){
+  for(let attempt=0;attempt<50;attempt++){
+    const badge=String(randomInt(10000,100000));
+    const exists=await prisma.officer.findUnique({where:{badgeNumber:badge},select:{id:true}});
+    if(!exists)return badge;
+  }
+  throw new Error("Unable to generate a unique badge number.");
+}
 
 export async function GET(){
   const access=await requirePermission("personnel.read");
@@ -23,9 +33,9 @@ export async function POST(req:Request){
 
   try{
     const body=await req.json();
-    if(!body.userId||!body.badgeNumber){
+    if(!body.userId){
       return NextResponse.json(
-        {error:"User and badge number are required."},
+        {error:"A Discord-linked user is required."},
         {status:400}
       );
     }
@@ -66,7 +76,10 @@ export async function POST(req:Request){
       );
     }
 
-    const discordRank=await getDiscordRankForRoles(member.roles);
+    const [discordRank,badgeNumber]=await Promise.all([
+      getDiscordRankForRoles(member.roles),
+      generateBadgeNumber()
+    ]);
 
     const officer=await prisma.$transaction(async tx=>{
       await tx.user.update({
@@ -77,7 +90,7 @@ export async function POST(req:Request){
       return tx.officer.create({
         data:{
           userId:user.id,
-          badgeNumber:String(body.badgeNumber).trim(),
+          badgeNumber,
           callsign:identity.callsign,
           rankId:discordRank?.id||null,
           divisionId:body.divisionId?String(body.divisionId):null
@@ -105,6 +118,7 @@ export async function POST(req:Request){
         entityId:officer.id,
         metadata:{
           badgeNumber:officer.badgeNumber,
+          badgeSource:"AUTO_GENERATED_5_DIGIT",
           callsign:officer.callsign,
           name:identity.name,
           discordNickname:member.nick,
@@ -120,7 +134,7 @@ export async function POST(req:Request){
   }catch(error){
     console.error("PERSONNEL_CREATE_FAILED",error);
     return NextResponse.json(
-      {error:"Could not create personnel record. Check badge/callsign uniqueness and Discord nickname format."},
+      {error:"Could not create personnel record. Check Discord nickname format and try again."},
       {status:500}
     );
   }

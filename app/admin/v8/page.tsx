@@ -17,7 +17,8 @@ export default async function V8(){
     "V8.3.4 1-Minute Full Department Discord Sync",
     "V8.3.5 Live Discord Sync Countdown",
     "V8.3.6 Discord Username Callsign Sync",
-    "V8.3.7 Discord Server Nickname Identity Sync"
+    "V8.3.7 Discord Server Nickname Identity Sync",
+    "V8.3.8 Automatic 5-Digit Badge Numbers"
   ];
 
   const planned=[
@@ -35,10 +36,10 @@ export default async function V8(){
     <div className="pagetop">
       <div>
         <p className="eyebrow">RELEASE STATUS</p>
-        <h1>Z6PD V8.3.7</h1>
-        <p>Discord-authoritative rank, callsign and officer name with automatic department synchronization. CAD remains intentionally separate.</p>
+        <h1>Z6PD V8.3.8</h1>
+        <p>Discord-authoritative personnel identity plus automatic unique 5-digit badge assignment. CAD remains intentionally separate.</p>
       </div>
-      <span className="connpill online">V8.3.7</span>
+      <span className="connpill online">V8.3.8</span>
     </div>
 
     <section className="panel">

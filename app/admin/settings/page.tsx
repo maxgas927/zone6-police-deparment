@@ -27,18 +27,18 @@ export default async function Settings(){
       </div>
 
       <div className="profilefacts">
-        <span><small>Current Version</small><b>V8.3.7</b></span>
-        <span><small>Latest Change</small><b>Discord Server Nickname Identity Sync</b></span>
+        <span><small>Current Version</small><b>V8.3.8</b></span>
+        <span><small>Latest Change</small><b>Automatic 5-Digit Badge Numbers</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
         <span><small>Deployment</small><b>DEPLOYING</b></span>
       </div>
 
-      <p className="hint">V8.3.7 reads personnel identity from the Discord server nickname. For a nickname like 1A-03 | Dept. Chief | Davion, Z6PD stores 1A-03 as the callsign and Davion as the officer name. Both automatically update during active-user and full-department Discord syncs. Rank remains controlled by mapped Discord roles.</p>
+      <p className="hint">V8.3.8 automatically assigns every new officer a unique random 5-digit badge number from 10000 through 99999. Badge generation is server-side and collision checked before the personnel record is created.</p>
     </section>
 
     <section className="panel">
-      <h3>Configuration Center</h3>
-      <p className="hint">Use the Discord nickname format Callsign | Title | Name. Example: 1A-03 | Dept. Chief | Davion.</p>
+      <h3>Personnel Identity Rules</h3>
+      <p className="hint">Badge number is generated automatically. Discord nickname format remains Callsign | Title | Name, for example 1A-03 | Dept. Chief | Davion.</p>
     </section>
   </main>;
 }

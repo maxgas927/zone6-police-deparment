@@ -46,20 +46,25 @@ export default function PersonnelForm({
         )}
       </select>
     </label>
+
     <label>
       Badge Number
-      <input name="badgeNumber" required placeholder="106"/>
+      <input value="Random 5-digit badge generated automatically" disabled/>
+      <small>A unique badge number from 10000–99999 is assigned when the personnel record is created.</small>
     </label>
+
     <label>
       Discord Nickname Format
       <input value="1A-03 | Dept. Chief | Davion" disabled/>
       <small>1A-03 becomes the callsign. Davion becomes the officer name. The middle title is informational.</small>
     </label>
+
     <label>
       Rank
       <input value="Assigned automatically from Discord roles" disabled/>
       <small>The highest-priority mapped department rank wins.</small>
     </label>
+
     <label>
       Division
       <select name="divisionId">
@@ -67,11 +72,13 @@ export default function PersonnelForm({
         {divisions.map(item=><option key={item.id} value={item.id}>{item.name}</option>)}
       </select>
     </label>
+
     <div className="formactions">
       <button className="primary" disabled={busy}>
         {busy?"Creating...":"Create Personnel Record"}
       </button>
     </div>
+
     {msg&&<p className="formerror">{msg}</p>}
   </form>;
 }
