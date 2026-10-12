@@ -15,7 +15,7 @@ export default async function Settings(){
         <span><small>Current Version</small><b>V8.3.6</b></span>
         <span><small>Latest Change</small><b>Discord Username Callsign Sync</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
-        <span><small>Deployment</small><b>DEPLOYING</b></span>
+        <span><small>Deployment</small><b>LIVE</b></span>
       </div>
       <p className="hint">V8.3.6 makes officer callsigns Discord-authoritative. Each callsign is set from the officer&apos;s Discord username when the personnel record is created and automatically updates during the 30-second active-user sync and the one-minute full-department sync. Manual callsign editing is disabled.</p>
     </section>
