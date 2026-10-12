@@ -35,7 +35,7 @@ export default function GlobalNavigation(){
  },[pathname,hidden]);
  useEffect(()=>{
   if(!open)return;
-  const escape=(e:KeyboardEvent)=>{if(e.key==="Escape"){setOpen(false);trigger.current?.focus()}};
+  const escape=(e:KeyboardEvent)=>{if(e.key==="Escape"){setOpen(false);trigger.current?.focus();return}if(e.key==="Tab"){const elements=Array.from(drawer.current?.querySelectorAll<HTMLElement>("button:not([disabled]),a[href]")||[]).filter(el=>el.tabIndex>=0);if(!elements.length)return;const first=elements[0],last=elements[elements.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}};
   const oldOverflow=document.body.style.overflow;
   document.body.style.overflow="hidden";
   const first=drawer.current?.querySelector<HTMLButtonElement>("button");first?.focus();
