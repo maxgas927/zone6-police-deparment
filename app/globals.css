@@ -140,3 +140,18 @@ nav a{text-decoration:none}
 .operationtimeline span{display:grid;gap:6px;min-width:0}.operationtimeline small{font-size:9px;color:#7a9fc6}.operationtimeline b{font-size:12px}.operationtimeline em{font-size:10px;color:#8396aa;font-style:normal;overflow-wrap:anywhere}
 @media(max-width:720px){.notificationtoolbar{flex-direction:column}.notificationitem{align-items:flex-start;flex-direction:column}.notificationitem button{align-self:flex-end}.readinesscards{grid-template-columns:1fr 1fr}.subpage{padding-left:12px;padding-right:12px}.notificationmeta{flex-wrap:wrap}}
 @media(max-width:420px){.readinesscards{grid-template-columns:1fr}.notificationfilters button{padding:8px}}
+
+/* V9 unified command workspace and mobile polish */
+.v9-commandhub{margin-top:14px}
+.v9-commandlinks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.v9-commandlinks a{display:flex;flex-direction:column;gap:8px;min-width:0;padding:16px;border:1px solid #25415f;border-radius:10px;background:linear-gradient(145deg,#10233a,#0a1523);text-decoration:none;color:#d9eaff;transition:border-color .2s,transform .2s}
+.v9-commandlinks a:hover,.v9-commandlinks a:focus-visible{border-color:#57a2ff;transform:translateY(-2px)}
+.v9-commandlinks a svg{color:#6eb6ff}
+.v9-commandlinks a b{font-size:12px}
+.v9-commandlinks a small{font-size:10px;color:#91a6c0;line-height:1.4}
+.z6-sidebar .sidebar-scroll{scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.z6-sidebar .sidebar-scroll nav a:focus-visible{outline:2px solid #6db4ff;outline-offset:-2px}
+@media(max-width:900px){.v9-commandlinks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.v9-commandhub{margin-top:12px}.v9-commandlinks{grid-template-columns:repeat(2,minmax(0,1fr))}.v9-commandlinks a{padding:13px}.content{min-width:0}.profile{min-width:0}header{gap:8px}.shell{overflow-x:clip}}
+@media(max-width:420px){.v9-commandlinks{grid-template-columns:1fr}.v9-commandlinks a{gap:5px}.v9-commandhub{padding:13px}}
+@media(prefers-reduced-motion:reduce){.z6-sidebar,.v9-commandlinks a{transition:none!important}.z6-sidebar .sidebar-scroll{scroll-behavior:auto}}
