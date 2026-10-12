@@ -1,11 +1,14 @@
 import Link from "next/link";
 import {redirect} from "next/navigation";
 import {currentAccess} from "@/lib/authz";
+import {prisma} from "@/lib/prisma";
+import PersonnelApprovalSettings from "./PersonnelApprovalSettings";
 
 export default async function Settings(){
   const access=await currentAccess();
   if(!access?.appRoles.includes("COMMAND"))redirect("/");
 
+  const policy=await prisma.personnelApprovalPolicy.findUnique({where:{id:"default"}});
   return <main className="subpage narrow">
     <Link href="/admin" className="back">← Administration</Link>
     <div className="pagetop">
@@ -36,6 +39,7 @@ export default async function Settings(){
       <p className="hint">V9.2.3 completes the V8 final enhancements with Discord 429 backoff and member request deduplication, safe role-mapping deletion audit, permission-aware category search, a slide-out navigation menu on every department page, mobile bottom navigation, an operational health endpoint, and GitHub TypeScript checks.</p>
     </section>
 
+    <PersonnelApprovalSettings initial={policy?.allowCommandSelfReview??false}/>
     <section className="panel">
       <h3>Automatic Personnel Onboarding</h3>
       <p className="hint">Users must have a Discord-linked Z6PD account and a server nickname in the format Callsign | Title | Name, for example 1A-03 | Dept. Chief | Davion. Once detected, Z6PD creates and maintains the personnel file automatically.</p>
