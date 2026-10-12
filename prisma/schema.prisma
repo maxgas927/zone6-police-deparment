@@ -7,85 +7,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum OfficerStatus {
-  ACTIVE
-  LOA
-  SUSPENDED
-  TERMINATED
-}
-
-enum DutyStatus {
-  OFF_DUTY
-  AVAILABLE
-  ON_DUTY
-  BUSY
-}
+enum OfficerStatus { ACTIVE LOA SUSPENDED TERMINATED }
+enum DutyStatus { OFF_DUTY AVAILABLE ON_DUTY BUSY }
 
 model User {
-  id            String    @id @default(cuid())
-  discordId     String?   @unique
-  email         String?   @unique
+  id String @id @default(cuid())
+  discordId String? @unique
+  email String? @unique
   emailVerified DateTime?
-  name          String?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  officer       Officer?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  name String?
+  image String?
+  accounts Account[]
+  sessions Session[]
+  officer Officer?
+  policyAcknowledgements PolicyAcknowledgement[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
+  id String @id @default(cuid())
+  userId String
+  type String
+  provider String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
+  refresh_token String? @db.Text
+  access_token String? @db.Text
+  expires_at Int?
+  token_type String?
+  scope String?
+  id_token String? @db.Text
+  session_state String?
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@unique([provider,providerAccountId])
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id String @id @default(cuid())
+  sessionToken String @unique
+  userId String
+  expires DateTime
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
 }
 
 model VerificationToken {
   identifier String
-  token      String
-  expires    DateTime
-
-  @@unique([identifier, token])
+  token String
+  expires DateTime
+  @@unique([identifier,token])
 }
 
 model Officer {
-  id          String          @id @default(cuid())
-  userId      String          @unique
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badgeNumber String          @unique
-  callsign    String?         @unique
-  rankId      String?
-  rank        Rank?           @relation(fields: [rankId], references: [id])
-  divisionId  String?
-  division    Division?       @relation(fields: [divisionId], references: [id])
+  id String @id @default(cuid())
+  userId String @unique
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  badgeNumber String @unique
+  callsign String? @unique
+  rankId String?
+  rank Rank? @relation(fields:[rankId],references:[id])
+  divisionId String?
+  division Division? @relation(fields:[divisionId],references:[id])
   subdivisionId String?
-  subdivision Subdivision? @relation(fields: [subdivisionId], references: [id])
-  status      OfficerStatus   @default(ACTIVE)
-  dutyStatus  DutyStatus      @default(OFF_DUTY)
-  hiredAt     DateTime        @default(now())
-  patrols     PatrolSession[]
-  reports     Report[]
+  subdivision Subdivision? @relation(fields:[subdivisionId],references:[id])
+  status OfficerStatus @default(ACTIVE)
+  dutyStatus DutyStatus @default(OFF_DUTY)
+  hiredAt DateTime @default(now())
+  patrols PatrolSession[]
+  reports Report[]
   trainingRecords TrainingRecord[]
   leaveRequests LeaveRequest[]
   fleetVehicles FleetVehicle[]
@@ -95,21 +83,22 @@ model Officer {
   citations Citation[]
   evidenceItems EvidenceItem[]
   shifts ShiftAssignment[]
+  commendations Commendation[]
 }
 
 model Rank {
-  id            String    @id @default(cuid())
-  name          String    @unique
-  priority      Int       @default(0)
-  discordRoleId String?   @unique
-  officers      Officer[]
+  id String @id @default(cuid())
+  name String @unique
+  priority Int @default(0)
+  discordRoleId String? @unique
+  officers Officer[]
 }
 
 model Division {
-  id            String    @id @default(cuid())
-  name          String    @unique
-  discordRoleId String?   @unique
-  officers      Officer[]
+  id String @id @default(cuid())
+  name String @unique
+  discordRoleId String? @unique
+  officers Officer[]
   subdivisions Subdivision[]
 }
 
@@ -117,35 +106,35 @@ model Subdivision {
   id String @id @default(cuid())
   name String
   divisionId String
-  division Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  division Division @relation(fields:[divisionId],references:[id],onDelete:Cascade)
   discordRoleId String? @unique
   officers Officer[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  @@unique([divisionId, name])
+  @@unique([divisionId,name])
 }
 
 model PatrolSession {
-  id        String    @id @default(cuid())
+  id String @id @default(cuid())
   officerId String
-  officer   Officer   @relation(fields: [officerId], references: [id], onDelete: Cascade)
-  startedAt DateTime  @default(now())
-  endedAt   DateTime?
-  minutes   Int?
+  officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
+  startedAt DateTime @default(now())
+  endedAt DateTime?
+  minutes Int?
 }
 
 model Report {
-  id        String   @id @default(cuid())
-  number    String   @unique
-  title     String
-  type      String
-  status    String   @default("DRAFT")
-  narrative String?  @db.Text
+  id String @id @default(cuid())
+  number String @unique
+  title String
+  type String
+  status String @default("DRAFT")
+  narrative String? @db.Text
   reviewNote String? @db.Text
   reviewedBy String?
   reviewedAt DateTime?
   officerId String
-  officer   Officer  @relation(fields: [officerId], references: [id])
+  officer Officer @relation(fields:[officerId],references:[id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   incidentAt DateTime?
@@ -177,7 +166,7 @@ model Application {
 model PromotionHistory {
   id String @id @default(cuid())
   officerId String
-  officer Officer @relation(fields: [officerId], references: [id], onDelete: Cascade)
+  officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
   fromRank String?
   toRank String
   reason String? @db.Text
@@ -199,21 +188,21 @@ model DiscordWebhook {
 }
 
 model DiscordRoleMapping {
-  id            String   @id @default(cuid())
-  discordRoleId String   @unique
-  label         String?
-  appRole       String
-  syncEnabled   Boolean  @default(true)
-  createdAt     DateTime @default(now())
+  id String @id @default(cuid())
+  discordRoleId String @unique
+  label String?
+  appRole String
+  syncEnabled Boolean @default(true)
+  createdAt DateTime @default(now())
 }
 
 model AuditLog {
-  id        String   @id @default(cuid())
-  actorId   String?
-  action    String
-  entity    String
-  entityId  String?
-  metadata  Json?
+  id String @id @default(cuid())
+  actorId String?
+  action String
+  entity String
+  entityId String?
+  metadata Json?
   createdAt DateTime @default(now())
 }
 
@@ -230,20 +219,20 @@ model TrainingCourse {
 model TrainingRecord {
   id String @id @default(cuid())
   officerId String
-  officer Officer @relation(fields: [officerId], references: [id], onDelete: Cascade)
+  officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
   courseId String
-  course TrainingCourse @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course TrainingCourse @relation(fields:[courseId],references:[id],onDelete:Cascade)
   issuedAt DateTime @default(now())
   expiresAt DateTime?
   notes String? @db.Text
   createdAt DateTime @default(now())
-  @@unique([officerId, courseId])
+  @@unique([officerId,courseId])
 }
 
 model LeaveRequest {
   id String @id @default(cuid())
   officerId String
-  officer Officer @relation(fields: [officerId], references: [id], onDelete: Cascade)
+  officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
   startDate DateTime
   endDate DateTime
   reason String @db.Text
@@ -265,7 +254,7 @@ model FleetVehicle {
   status String @default("AVAILABLE")
   mileage Int @default(0)
   assignedOfficerId String?
-  assignedOfficer Officer? @relation(fields: [assignedOfficerId], references: [id], onDelete: SetNull)
+  assignedOfficer Officer? @relation(fields:[assignedOfficerId],references:[id],onDelete:SetNull)
   notes String? @db.Text
   lastServiceAt DateTime?
   nextServiceMileage Int?
@@ -281,7 +270,7 @@ model EquipmentAsset {
   serialNumber String? @unique
   status String @default("AVAILABLE")
   assignedOfficerId String?
-  assignedOfficer Officer? @relation(fields: [assignedOfficerId], references: [id], onDelete: SetNull)
+  assignedOfficer Officer? @relation(fields:[assignedOfficerId],references:[id],onDelete:SetNull)
   issuedAt DateTime?
   dueAt DateTime?
   notes String? @db.Text
@@ -314,98 +303,152 @@ model Announcement {
   updatedAt DateTime @updatedAt
 }
 
-
 model Bolo {
- id String @id @default(cuid())
- number String @unique
- type String
- priority String @default("NORMAL")
- subject String
- description String @db.Text
- vehicle String?
- plate String?
- imageUrl String?
- relatedReport String?
- status String @default("ACTIVE")
- expiresAt DateTime?
- createdBy String?
- createdAt DateTime @default(now())
- updatedAt DateTime @updatedAt
+  id String @id @default(cuid())
+  number String @unique
+  type String
+  priority String @default("NORMAL")
+  subject String
+  description String @db.Text
+  vehicle String?
+  plate String?
+  imageUrl String?
+  relatedReport String?
+  status String @default("ACTIVE")
+  expiresAt DateTime?
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
 model Warrant {
- id String @id @default(cuid())
- number String @unique
- subject String
- charges String @db.Text
- summary String? @db.Text
- priority String @default("NORMAL")
- relatedReport String?
- status String @default("ACTIVE")
- expiresAt DateTime?
- createdBy String?
- createdAt DateTime @default(now())
- updatedAt DateTime @updatedAt
+  id String @id @default(cuid())
+  number String @unique
+  subject String
+  charges String @db.Text
+  summary String? @db.Text
+  priority String @default("NORMAL")
+  relatedReport String?
+  status String @default("ACTIVE")
+  expiresAt DateTime?
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
 model Arrest {
- id String @id @default(cuid())
- number String @unique
- subject String
- charges String @db.Text
- location String?
- jail String?
- relatedReport String?
- officerId String
- officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
- arrestedAt DateTime @default(now())
- createdAt DateTime @default(now())
+  id String @id @default(cuid())
+  number String @unique
+  subject String
+  charges String @db.Text
+  location String?
+  jail String?
+  relatedReport String?
+  officerId String
+  officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
+  arrestedAt DateTime @default(now())
+  createdAt DateTime @default(now())
 }
+
 model Citation {
- id String @id @default(cuid())
- number String @unique
- subject String
- violations String @db.Text
- fine Int?
- location String?
- relatedReport String?
- officerId String
- officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
- issuedAt DateTime @default(now())
- createdAt DateTime @default(now())
+  id String @id @default(cuid())
+  number String @unique
+  subject String
+  violations String @db.Text
+  fine Int?
+  location String?
+  relatedReport String?
+  officerId String
+  officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
+  issuedAt DateTime @default(now())
+  createdAt DateTime @default(now())
 }
+
 model EvidenceItem {
- id String @id @default(cuid())
- number String @unique
- name String
- category String
- description String? @db.Text
- storageLocation String?
- status String @default("STORED")
- relatedReport String?
- officerId String
- officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
- createdAt DateTime @default(now())
- updatedAt DateTime @updatedAt
+  id String @id @default(cuid())
+  number String @unique
+  name String
+  category String
+  description String? @db.Text
+  storageLocation String?
+  status String @default("STORED")
+  relatedReport String?
+  officerId String
+  officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
 model ShiftAssignment {
- id String @id @default(cuid())
- officerId String
- officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
- title String
- startsAt DateTime
- endsAt DateTime
- assignment String?
- supervisor String?
- status String @default("SCHEDULED")
- createdAt DateTime @default(now())
+  id String @id @default(cuid())
+  officerId String
+  officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
+  title String
+  startsAt DateTime
+  endsAt DateTime
+  assignment String?
+  supervisor String?
+  status String @default("SCHEDULED")
+  createdAt DateTime @default(now())
 }
+
 model DepartmentEvent {
- id String @id @default(cuid())
- title String
- type String
- startsAt DateTime
- endsAt DateTime?
- location String?
- description String? @db.Text
- createdBy String?
- createdAt DateTime @default(now())
+  id String @id @default(cuid())
+  title String
+  type String
+  startsAt DateTime
+  endsAt DateTime?
+  location String?
+  description String? @db.Text
+  createdBy String?
+  createdAt DateTime @default(now())
+}
+
+model PolicyDocument {
+  id String @id @default(cuid())
+  title String
+  category String
+  version String @default("1.0")
+  body String @db.Text
+  effectiveAt DateTime?
+  requiredAck Boolean @default(false)
+  published Boolean @default(true)
+  createdBy String?
+  acknowledgements PolicyAcknowledgement[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PolicyAcknowledgement {
+  id String @id @default(cuid())
+  documentId String
+  document PolicyDocument @relation(fields:[documentId],references:[id],onDelete:Cascade)
+  userId String
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  acknowledgedAt DateTime @default(now())
+  @@unique([documentId,userId])
+}
+
+model Commendation {
+  id String @id @default(cuid())
+  officerId String
+  officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
+  title String
+  type String @default("COMMENDATION")
+  reason String @db.Text
+  issuedBy String?
+  issuedAt DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+model OrganizationVacancy {
+  id String @id @default(cuid())
+  title String
+  division String?
+  subdivision String?
+  rank String?
+  status String @default("OPEN")
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

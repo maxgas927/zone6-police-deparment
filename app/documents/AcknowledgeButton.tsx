@@ -1,0 +1,1 @@
+"use client";import {useRouter} from "next/navigation";export default function AcknowledgeButton({id}:{id:string}){const r=useRouter();return <button className="primary" onClick={async()=>{const x=await fetch("/api/documents/"+id+"/ack",{method:"POST"});if(x.ok)r.refresh()}}>Acknowledge</button>}
