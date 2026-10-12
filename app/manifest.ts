@@ -1,0 +1,2 @@
+import type {MetadataRoute} from "next";
+export default function manifest():MetadataRoute.Manifest{return {name:"Zone6 Police Department Command Center",short_name:"Z6PD",description:"Zone6 Police Department secure command center",start_url:"/",scope:"/",display:"standalone",background_color:"#080c13",theme_color:"#07101d",icons:[{src:"/z6pd-logo.jpg",sizes:"any",type:"image/jpeg",purpose:"any"}]};}
