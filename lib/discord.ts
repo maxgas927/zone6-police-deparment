@@ -54,3 +54,22 @@ export async function resolveAccess(discordId:string){
  const mappings=await prisma.discordRoleMapping.findMany({where:{discordRoleId:{in:member.roles},syncEnabled:true}});
  return {member:true,roles:member.roles,appRoles:[...new Set(mappings.map(x=>x.appRole))],username:member.user.username,nickname:member.nick};
 }
+
+export async function changeDiscordRank(discordId:string,fromRoleId:string|null,toRoleId:string){
+ if(!guild()||!token())throw new Error("Discord bot not configured");
+ const [roles,member]=await Promise.all([getGuildRoles(),getGuildMember(discordId)]);
+ if(!member)throw new Error("Officer is not in the Discord server");
+ const target=roles.find(r=>r.id===toRoleId);
+ if(!target||target.managed)throw new Error("Target rank role is unavailable");
+ const current=fromRoleId&&member.roles.includes(fromRoleId)?fromRoleId:null;
+ if(!member.roles.includes(toRoleId)){
+  const added=await discord("/guilds/"+guild()+"/members/"+discordId+"/roles/"+toRoleId,{method:"PUT"});
+  if(!added.ok)throw new Error("Discord could not assign the new rank (HTTP "+added.status+")");
+ }
+ if(current&&current!==toRoleId){
+  const removed=await discord("/guilds/"+guild()+"/members/"+discordId+"/roles/"+current,{method:"DELETE"});
+  if(!removed.ok)throw new Error("New rank assigned, but old rank could not be removed. Manual Discord reconciliation required (HTTP "+removed.status+").");
+ }
+ memberCache.delete(discordId);
+ return {added:!member.roles.includes(toRoleId),removed:!!current&&current!==toRoleId};
+}
