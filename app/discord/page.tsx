@@ -25,9 +25,9 @@ export default async function DiscordSettings(){
   const roleName=new Map(roles.map(r=>[r.id,r.name]));
   return <main className="subpage">
     <Link href="/" className="back">← Dashboard</Link>
-    <div className="pagetop"><div><p className="eyebrow">INTEGRATIONS</p><h1>Discord Control Center</h1><p>Live guild roles, website permissions and automatic department rank synchronization every 30 seconds for active sessions.</p></div><span className={roles.length?"connpill online":"connpill offline"}>{roles.length?"● Connected":"● Needs attention"}</span></div>
+    <div className="pagetop"><div><p className="eyebrow">INTEGRATIONS</p><h1>Discord Control Center</h1><p>Full department Discord synchronization runs every minute, with 30-second live refreshes for active signed-in users.</p></div><span className={roles.length?"connpill online":"connpill offline"}>{roles.length?"● Connected":"● Needs attention"}</span></div>
     {error&&<div className="discordalert panel"><b>Integration warning</b><p>{error}</p></div>}
-    <div className="discordhero panel"><div><span className="discordmark">Z6</span><div><b>Zone6 Police Department</b><p>Discord membership, permission groups and personnel rank are continuously rechecked while the app is open.</p></div></div><div className="discordmetrics"><span><b>30s</b> Auto Sync</span><span><b>{roles.length}</b> Roles</span><span><b>{mappings.length}</b> Permission Mappings</span><span><b>{access.appRoles.join(", ")}</b> Your access</span></div></div>
+    <div className="discordhero panel"><div><span className="discordmark">Z6</span><div><b>Zone6 Police Department</b><p>Department personnel ranks are kept aligned with mapped Discord roles automatically, even when officers are not actively using the website.</p></div></div><div className="discordmetrics"><span><b>1m</b> Full Dept Sync</span><span><b>30s</b> Active User Sync</span><span><b>{roles.length}</b> Roles</span><span><b>{mappings.length}</b> Permission Mappings</span></div></div>
     <SyncPersonnel/>
     <div className="twocol discordgrid">
       <section className="panel setting"><div className="paneltitle"><div><b>Permission Role Mapping</b><span>Discord role → Z6PD permission group.</span></div></div><RoleMappingManager roles={roles}/></section>

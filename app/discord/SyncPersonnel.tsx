@@ -16,7 +16,7 @@ export default function SyncPersonnel(){
 
   return <div className="syncbox">
     <button className="primary" onClick={go}>Run Full Discord Sync Now</button>
-    <span>Active signed-in users auto-sync every 30 seconds.</span>
+    <span>Full department sync runs every 1 minute. Active signed-in users also refresh every 30 seconds.</span>
     {msg&&<span>{msg}</span>}
   </div>;
 }

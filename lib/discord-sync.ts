@@ -23,7 +23,10 @@ export async function syncOfficerRankFromRoles(userId:string,roles:string[]){
 
 export async function syncOfficerFromDiscord(userId:string,discordId:string){
   const member=await getGuildMember(discordId);
-  if(!member)return {member:false,rank:null,changed:false};
+  if(!member){
+    const result=await syncOfficerRankFromRoles(userId,[]);
+    return {member:false,rank:null,changed:result.changed};
+  }
   const result=await syncOfficerRankFromRoles(userId,member.roles);
   return {member:true,rank:result.rank,changed:result.changed};
 }
