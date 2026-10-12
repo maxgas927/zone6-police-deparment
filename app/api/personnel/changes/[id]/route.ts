@@ -56,7 +56,7 @@ export async function PATCH(req:Request,{params}:{params:Promise<{id:string}>}){
   }
   await tx.auditLog.create({data:{actorId:a.user.id,action:"PERSONNEL_CHANGE_"+status,entity:"PersonnelChangeRequest",entityId:id,metadata:{officerId:request.officerId,kind:request.kind,targetId:request.targetId,reason:request.reason,reviewNote:note||null}}});
   return "OK";
- });}catch{return NextResponse.json({error:"Approval could not be applied; the target or officer assignment may have changed."},{status:409})}
+ });}catch{if(claimed)await prisma.personnelChangeRequest.update({where:{id},data:{status:"SYNC_FAILED",reviewNote:"Discord rank was updated but database approval failed. Reconcile and retry."}});return NextResponse.json({error:"Approval could not be applied; the target or officer assignment may have changed."},{status:409})}
  if(result!=="OK"){if(claimed)await prisma.personnelChangeRequest.update({where:{id},data:{status:"SYNC_FAILED",reviewNote:"Discord role changed but database update conflicted; review officer rank before retrying."}});return NextResponse.json({error:"Personnel assignment changed or target is no longer valid. Review the request before retrying."},{status:409});}
  await sendZ6Webhook("personnel","Personnel Change "+status,request.kind+" request "+status.toLowerCase(),[{name:"Officer ID",value:request.officerId},{name:"Decision",value:note||status}],{style:status==="APPROVED"?"success":"danger",url:"/admin/personnel-approvals"}).catch(()=>null);
  return NextResponse.json({ok:true,status});
