@@ -30,7 +30,7 @@ export async function POST(req:Request){
   if(!rank||rank.id===officer.rankId)return NextResponse.json({error:"Select a different valid rank"},{status:400});
   if(previous&&(kind==="PROMOTION"?rank.priority<=previous.priority:rank.priority>=previous.priority))return NextResponse.json({error:"Rank priority does not match promotion/demotion"},{status:400});
  }
- const pending=await prisma.personnelChangeRequest.findFirst({where:{officerId,kind,status:"PENDING"}});
+ const pending=await prisma.personnelChangeRequest.findFirst({where:{officerId,kind,status:{in:["PENDING","SYNCING","SYNC_FAILED"]}}});
  if(pending)return NextResponse.json({error:"An approval request of this type is already pending for this officer"},{status:409});
  const created=await prisma.$transaction(async tx=>{
   const request=await tx.personnelChangeRequest.create({data:{officerId,kind,targetId,reason,requestedBy:a.user.id}});
