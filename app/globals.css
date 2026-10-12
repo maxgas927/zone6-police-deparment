@@ -236,3 +236,13 @@ nav a{text-decoration:none}
 }
 .z6-global-nav-drawer:not(.open){visibility:hidden}
 .z6-global-nav-drawer.open{visibility:visible}
+
+/* V9.8 mobile command workflows: prevent approval forms and queues overflowing narrow screens */
+@media(max-width:760px){
+ .subpage .twocol,.subpage .reportform,.subpage .admincards,.subpage .readinesscards{grid-template-columns:minmax(0,1fr)!important}
+ .subpage .panel,.subpage .setting,.subpage .mappingrow{min-width:0;max-width:100%;overflow-wrap:anywhere}
+ .subpage input,.subpage select,.subpage textarea{max-width:100%;width:100%;box-sizing:border-box}
+ .subpage .reportactions{display:flex;flex-wrap:wrap;gap:8px}
+ .subpage .reportactions button{min-height:44px;flex:1 1 120px}
+ .subpage .mappingrow{align-items:flex-start;gap:12px}
+}
