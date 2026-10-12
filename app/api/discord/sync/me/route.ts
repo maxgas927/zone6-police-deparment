@@ -8,7 +8,7 @@ export async function GET(){
   const access=await currentAccess();
   if(!access)return NextResponse.json({error:"Unauthorized"},{status:401});
 
-  const matrix=access.member?await effectiveMatrix():{};
+  const matrix:Record<string,string[]>=access.member?await effectiveMatrix():{};
   const granted=[...new Set(access.appRoles.flatMap(role=>matrix[role]||[]))];
   return NextResponse.json({
     ok:true,
