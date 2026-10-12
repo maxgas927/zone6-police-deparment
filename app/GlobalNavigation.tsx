@@ -21,7 +21,7 @@ export default function GlobalNavigation(){
  const [roles,setRoles]=useState<string[]>([]);
  const [open,setOpen]=useState(false);
  const trigger=useRef<HTMLButtonElement>(null);
- const hidden=pathname==="/"||pathname==="/login"||pathname==="/apply"||pathname.startsWith("/setup");
+ const hidden=pathname==="/login"||pathname==="/apply"||pathname.startsWith("/setup");
  useEffect(()=>{setOpen(false)},[pathname]);
  useEffect(()=>{
   if(hidden)return;
