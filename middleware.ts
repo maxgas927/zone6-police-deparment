@@ -8,6 +8,7 @@ export function middleware(req:NextRequest){
     p.startsWith("/api/auth")||
     p==="/api/health"||
     p==="/api/discord/sync/full"||
+    p==="/api/discord/interactions"||
     p.startsWith("/_next")||
     p==="/favicon.ico"
   )return NextResponse.next();
