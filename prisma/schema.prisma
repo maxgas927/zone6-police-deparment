@@ -7,8 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum OfficerStatus { ACTIVE LOA SUSPENDED TERMINATED }
-enum DutyStatus { OFF_DUTY AVAILABLE ON_DUTY BUSY }
+enum OfficerStatus {
+  ACTIVE
+  LOA
+  SUSPENDED
+  TERMINATED
+}
+enum DutyStatus {
+  OFF_DUTY
+  AVAILABLE
+  ON_DUTY
+  BUSY
+}
 
 model User {
   id String @id @default(cuid())
