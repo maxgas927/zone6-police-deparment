@@ -8,20 +8,23 @@ export default async function Supervisor(){
  const a=await currentAccess();
  if(!a?.member||!a.appRoles.some(r=>can(r,"reports.review")||can(r,"admin.manage")))redirect("/");
  const now=new Date(),soon=new Date(now.getTime()+30*86400000);
- const [reports,reportCount,leaves,certs,duty,overdue,unavailable]=await Promise.all([
+ const [reports,reportCount,leaves,certs,duty,overdue,unavailable,activePatrols,pendingApplications]=await Promise.all([
   prisma.report.findMany({where:{status:"SUBMITTED"},include:{officer:{include:{user:true}}},orderBy:{createdAt:"asc"},take:20}),
   prisma.report.count({where:{status:"SUBMITTED"}}),
   prisma.leaveRequest.findMany({where:{status:"PENDING"},include:{officer:{include:{user:true}}},orderBy:{createdAt:"asc"},take:12}),
   prisma.trainingRecord.findMany({where:{expiresAt:{lte:soon}},include:{course:true,officer:{include:{user:true}}},orderBy:{expiresAt:"asc"},take:12}),
   prisma.officer.count({where:{dutyStatus:{in:["ON_DUTY","AVAILABLE"]}}}),
   prisma.equipmentAsset.count({where:{status:"ISSUED",dueAt:{lt:now}}}),
-  prisma.fleetVehicle.count({where:{status:{in:["MAINTENANCE","OUT_OF_SERVICE"]}}})
+  prisma.fleetVehicle.count({where:{status:{in:["MAINTENANCE","OUT_OF_SERVICE"]}}}),
+  prisma.patrolSession.findMany({where:{endedAt:null},include:{officer:{include:{user:true}}},orderBy:{startedAt:"asc"},take:20}),
+  prisma.application.count({where:{status:"PENDING"}})
  ]);
  return <main className="subpage">
   <Link href="/" className="back">← Dashboard</Link>
   <div className="pagetop"><div><p className="eyebrow">SUPERVISOR MANAGEMENT V4</p><h1>Supervisor Command Center</h1><p>Report approvals, leave requests, certification risks and staffing readiness.</p></div></div>
-  <div className="personnelstats"><div><b>{reportCount}</b><span>Reports Pending</span></div><div><b>{leaves.length}</b><span>LOA Pending (up to 12)</span></div><div><b>{duty}</b><span>On Duty / Available</span></div><div><b>{certs.length}</b><span>Certification Alerts (up to 12)</span></div><div><b>{overdue}</b><span>Equipment Overdue</span></div><div><b>{unavailable}</b><span>Fleet Unavailable</span></div></div>
+  <div className="personnelstats"><div><b>{reportCount}</b><span>Reports Pending</span></div><div><b>{leaves.length}</b><span>LOA Pending (up to 12)</span></div><div><b>{duty}</b><span>On Duty / Available</span></div><div><b>{certs.length}</b><span>Certification Alerts (up to 12)</span></div><div><b>{overdue}</b><span>Equipment Overdue</span></div><div><b>{unavailable}</b><span>Fleet Unavailable</span></div><div><b>{activePatrols.length}</b><span>Live Patrols (up to 20)</span></div><div><b>{pendingApplications}</b><span>Applications Pending</span></div></div>
   <div className="twocol">
+   <section className="panel setting"><div className="paneltitle"><div><b>Active Patrol Board</b><span>Live sessions ordered by start time</span></div><Link href="/patrol">Patrol Center →</Link></div>\n    {activePatrols.length?activePatrols.map(p=><Link key={p.id} className="profileline" href={"/personnel/"+p.officerId}><span><b>{p.officer.user.name||"Officer"} · {p.officer.callsign||p.officer.badgeNumber}</b><small>On patrol since {p.startedAt.toLocaleString()}</small></span><em>ACTIVE</em></Link>):<div className="empty compact">No active patrol sessions.</div>}\n   </section>
    <section className="panel setting"><div className="paneltitle"><div><b>Report Review Queue</b><span>Oldest submitted reports first</span></div><Link href="/reports">All reports →</Link></div>
     {reports.length?reports.map(r=><Link className="profileline supervisorlink" href={"/reports/"+r.id} key={r.id}><span><b>{r.number} · {r.title}</b><small>{r.officer.user.name||"Officer"} · {r.createdAt.toLocaleString()}</small></span><em>REVIEW</em></Link>):<div className="empty compact">No reports awaiting review.</div>}
    </section>
