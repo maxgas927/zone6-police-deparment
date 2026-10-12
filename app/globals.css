@@ -206,3 +206,13 @@ nav a{text-decoration:none}
 .globalsearch select{background:#09111b;color:#eef5fd;border:1px solid #243b55;border-radius:7px;padding:10px;min-width:0}
 @media(max-width:720px){.subpage{padding-bottom:94px!important;padding-top:58px!important}.z6-global-nav-trigger{top:11px;right:10px}.globalsearch{grid-template-columns:minmax(0,1fr);gap:9px}.globalsearch select,.globalsearch button{width:100%}}
 @media(prefers-reduced-motion:reduce){.z6-global-nav-drawer{transition:none}}
+
+/* Navigation hotfix: keep shared bottom bar attached to viewport, not content */
+@media(max-width:720px){
+ body>.v91-mobile-nav,body>.z6-global-nav-trigger{position:fixed}
+ .v91-mobile-nav{position:fixed!important;inset:auto 0 0 0!important;top:auto!important;bottom:0!important;width:100vw;max-width:100vw;margin:0!important;transform:none!important;translate:none!important;z-index:100!important}
+ .z6-global-nav-trigger{position:fixed!important;top:max(11px,env(safe-area-inset-top))!important;bottom:auto!important;right:10px!important;left:auto!important;transform:none!important;z-index:102!important}
+ .z6-global-nav-drawer{position:fixed!important;top:0!important;bottom:0!important;height:100dvh!important;z-index:104!important}
+ .z6-global-nav-backdrop{z-index:103!important}
+ body{padding-bottom:calc(66px + env(safe-area-inset-bottom))}
+}
