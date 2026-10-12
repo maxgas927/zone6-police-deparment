@@ -63,7 +63,6 @@ export async function changeDiscordRank(discordId:string,fromRoleId:string|null,
  if(!target||target.managed)throw new Error("Target rank role is unavailable");
  const rankMappings=await prisma.rank.findMany({where:{discordRoleId:{not:null}},select:{discordRoleId:true}});
  const currentRankRoles=rankMappings.map(r=>r.discordRoleId).filter((id):id is string=>!!id&&id!==toRoleId&&member.roles.includes(id));
- const current=fromRoleId&&member.roles.includes(fromRoleId)?fromRoleId:null;
  if(!member.roles.includes(toRoleId)){
   const added=await discord("/guilds/"+guild()+"/members/"+discordId+"/roles/"+toRoleId,{method:"PUT"});
   if(!added.ok)throw new Error("Discord could not assign the new rank (HTTP "+added.status+")");
