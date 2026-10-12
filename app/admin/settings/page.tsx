@@ -30,7 +30,7 @@ export default async function Settings(){
         <span><small>Current Version</small><b>V8.3.9</b></span>
         <span><small>Latest Change</small><b>Automatic Personnel File Creation</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
-        <span><small>Deployment</small><b>DEPLOYING</b></span>
+        <span><small>Deployment</small><b>LIVE</b></span>
       </div>
 
       <p className="hint">V8.3.9 automatically creates a personnel file the first time a Discord-linked department member is detected without one. The file receives a unique 5-digit badge number, callsign and name from the server nickname, and rank from mapped Discord roles. Existing linked users are also picked up by the one-minute full department sync.</p>
