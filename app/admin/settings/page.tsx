@@ -15,7 +15,7 @@ export default async function Settings(){
         <span><small>Current Version</small><b>V8.3.3</b></span>
         <span><small>Latest Change</small><b>30-Second Discord Auto Sync</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
-        <span><small>Deployment</small><b>DEPLOYING</b></span>
+        <span><small>Deployment</small><b>LIVE</b></span>
       </div>
       <p className="hint">V8.3.3 adds a 30-second Discord heartbeat for active signed-in users. Membership, mapped permission groups and Discord-authoritative rank are rechecked automatically; changed access or rank refreshes the live interface without requiring a manual sync.</p>
     </section>
