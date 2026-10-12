@@ -116,3 +116,27 @@ nav a{text-decoration:none}
   .z6-sidebar .sidefoot{display:flex}
   .content{margin-left:0!important;width:100%!important;padding-top:44px!important}
 }
+
+/* V8.5-V8.9 release: notification center, readiness, mobile and timeline */
+.notificationcenter{margin-top:18px}
+.notificationtoolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:15px}
+.notificationfilters{display:flex;gap:6px;flex-wrap:wrap}
+.notificationfilters button{border:1px solid #29405a;border-radius:7px;background:#0d1b2b;color:#95acc4;padding:9px 11px;font-size:10px;cursor:pointer}
+.notificationfilters button.active{background:#164777;color:#d4eaff;border-color:#3681c7}
+.notificationitem{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid #1a2b3d;padding:17px 6px;border-left:3px solid transparent}
+.notificationitem.unread{background:#101d2b;border-left-color:#388ae8;padding-left:12px}
+.notificationitem.urgent{border-left-color:#d9a34a}
+.notificationbody{min-width:0;flex:1}
+.notificationbody>a{text-decoration:none;color:#d9eaff}
+.notificationbody>a b{font-size:13px}
+.notificationbody p{font-size:11px;line-height:1.6;color:#8295aa;margin:6px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.notificationmeta{display:flex;align-items:center;gap:12px;margin-bottom:8px;color:#7092b4;font-size:9px}
+.notificationmeta strong{color:#e4ac56}
+.notificationitem button{background:#102942;color:#a5cbfa;border:1px solid #31577a;border-radius:7px;padding:8px 11px;cursor:pointer;white-space:nowrap}
+.readinesscards{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px;margin:20px 0}
+.readinesscard{text-decoration:none;color:inherit;display:grid;gap:12px}
+.readinesscard>span{font-size:11px;color:#9cb2cb}.readinesscard strong{font-size:28px;color:#c8e2ff}.readinesscard small{font-size:9px;color:#6d849d}
+.operationtimeline{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #1a2b3d;padding:16px 4px;text-decoration:none;color:#d6e8fa}
+.operationtimeline span{display:grid;gap:6px;min-width:0}.operationtimeline small{font-size:9px;color:#7a9fc6}.operationtimeline b{font-size:12px}.operationtimeline em{font-size:10px;color:#8396aa;font-style:normal;overflow-wrap:anywhere}
+@media(max-width:720px){.notificationtoolbar{flex-direction:column}.notificationitem{align-items:flex-start;flex-direction:column}.notificationitem button{align-self:flex-end}.readinesscards{grid-template-columns:1fr 1fr}.subpage{padding-left:12px;padding-right:12px}.notificationmeta{flex-wrap:wrap}}
+@media(max-width:420px){.readinesscards{grid-template-columns:1fr}.notificationfilters button{padding:8px}}
