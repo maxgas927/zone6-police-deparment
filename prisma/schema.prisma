@@ -91,6 +91,10 @@ model Officer {
   fleetVehicles FleetVehicle[]
   equipmentAssets EquipmentAsset[]
   promotionHistory PromotionHistory[]
+  arrests Arrest[]
+  citations Citation[]
+  evidenceItems EvidenceItem[]
+  shifts ShiftAssignment[]
 }
 
 model Rank {
@@ -308,4 +312,100 @@ model Announcement {
   published Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+model Bolo {
+ id String @id @default(cuid())
+ number String @unique
+ type String
+ priority String @default("NORMAL")
+ subject String
+ description String @db.Text
+ vehicle String?
+ plate String?
+ imageUrl String?
+ relatedReport String?
+ status String @default("ACTIVE")
+ expiresAt DateTime?
+ createdBy String?
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+}
+model Warrant {
+ id String @id @default(cuid())
+ number String @unique
+ subject String
+ charges String @db.Text
+ summary String? @db.Text
+ priority String @default("NORMAL")
+ relatedReport String?
+ status String @default("ACTIVE")
+ expiresAt DateTime?
+ createdBy String?
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+}
+model Arrest {
+ id String @id @default(cuid())
+ number String @unique
+ subject String
+ charges String @db.Text
+ location String?
+ jail String?
+ relatedReport String?
+ officerId String
+ officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
+ arrestedAt DateTime @default(now())
+ createdAt DateTime @default(now())
+}
+model Citation {
+ id String @id @default(cuid())
+ number String @unique
+ subject String
+ violations String @db.Text
+ fine Int?
+ location String?
+ relatedReport String?
+ officerId String
+ officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
+ issuedAt DateTime @default(now())
+ createdAt DateTime @default(now())
+}
+model EvidenceItem {
+ id String @id @default(cuid())
+ number String @unique
+ name String
+ category String
+ description String? @db.Text
+ storageLocation String?
+ status String @default("STORED")
+ relatedReport String?
+ officerId String
+ officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+}
+model ShiftAssignment {
+ id String @id @default(cuid())
+ officerId String
+ officer Officer @relation(fields:[officerId],references:[id],onDelete:Cascade)
+ title String
+ startsAt DateTime
+ endsAt DateTime
+ assignment String?
+ supervisor String?
+ status String @default("SCHEDULED")
+ createdAt DateTime @default(now())
+}
+model DepartmentEvent {
+ id String @id @default(cuid())
+ title String
+ type String
+ startsAt DateTime
+ endsAt DateTime?
+ location String?
+ description String? @db.Text
+ createdBy String?
+ createdAt DateTime @default(now())
 }
