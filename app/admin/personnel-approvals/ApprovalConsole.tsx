@@ -4,7 +4,7 @@ import {useState} from "react";
 type Officer={id:string;badgeNumber:string;user:{name:string|null}};
 type Target={id:string;name:string};
 type Request={id:string;officerId:string;kind:string;targetId:string;reason:string;status:string;requestedBy:string;reviewNote:string|null;createdAt:Date};
-export default function ApprovalConsole({officers,ranks,divisions,requests,userId}:{officers:Officer[];ranks:Target[];divisions:Target[];requests:Request[];userId:string}){
+export default function ApprovalConsole({officers,ranks,divisions,requests,userId,allowSelfReview}:{officers:Officer[];ranks:Target[];divisions:Target[];requests:Request[];userId:string;allowSelfReview:boolean}){
  const router=useRouter();
  const [kind,setKind]=useState("PROMOTION");
  const [busy,setBusy]=useState(false);
@@ -32,7 +32,7 @@ export default function ApprovalConsole({officers,ranks,divisions,requests,userI
  <p className="hint">Only another Command member can approve or deny a request. Approving a rank change updates Discord through the department bot.</p>
  {requests.map(item=><div className="mappingrow" key={item.id}><div><b>{item.kind} · {officers.find(o=>o.id===item.officerId)?.user.name||item.officerId}</b><small>{item.status} · {item.reason} · Target: {(item.kind==="TRANSFER"?divisions:ranks).find(x=>x.id===item.targetId)?.name||"Unknown"}</small><small>{new Date(item.createdAt).toLocaleString()}</small>
  {item.reviewNote&&<small>Review: {item.reviewNote}</small>}
- {(item.status==="PENDING"||item.status==="SYNC_FAILED")&&item.requestedBy!==userId&&<div><textarea aria-label="Command review note" placeholder="Review note (required for denial)" value={notes[item.id]||""} onChange={e=>setNotes(v=>({...v,[item.id]:e.target.value}))} rows={2}/><div className="reportactions"><button className="primary" disabled={busy} onClick={()=>review(item.id,"APPROVED")}>{item.status==="SYNC_FAILED"?"Retry Discord & Approve":"Approve & Sync Discord"}</button><button className="secondary danger" disabled={busy||!(notes[item.id]||"").trim()} onClick={()=>review(item.id,"DENIED")}>Deny</button></div></div>}
+ {(item.status==="PENDING"||item.status==="SYNC_FAILED")&&(allowSelfReview||item.requestedBy!==userId)&&<div><textarea aria-label="Command review note" placeholder="Review note (required for denial)" value={notes[item.id]||""} onChange={e=>setNotes(v=>({...v,[item.id]:e.target.value}))} rows={2}/><div className="reportactions"><button className="primary" disabled={busy} onClick={()=>review(item.id,"APPROVED")}>{item.status==="SYNC_FAILED"?"Retry Discord & Approve":"Approve & Sync Discord"}</button><button className="secondary danger" disabled={busy||!(notes[item.id]||"").trim()} onClick={()=>review(item.id,"DENIED")}>Deny</button></div></div>}
  </div></div>)}
  {!requests.length&&<p className="hint">No personnel change requests yet.</p>}
  </section>{message&&<p role="status" className="hint">{message}</p>}</div>;
