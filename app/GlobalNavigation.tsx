@@ -14,7 +14,7 @@ const links:[string,string,Permission|null][]=[
  ["Schedule","/schedule","schedule.read"],["Reports","/reports","reports.create"],["Patrol","/patrol","patrol.use"],
  ["Training","/training","personnel.read"],["Fleet","/fleet","admin.manage"],["Armory","/armory","admin.manage"],
  ["Leave Requests","/loa","personnel.read"],["Discipline","/discipline","discipline.read"],["Announcements","/announcements","personnel.read"],
- ["Supervisor Center","/supervisor","reports.review"],["Discord","/discord","discord.manage"],["Administration","/admin","admin.manage"]
+ ["Supervisor Center","/supervisor","reports.review"],["Personnel Approvals","/admin/personnel-approvals","admin.manage"],["Discord","/discord","discord.manage"],["Administration","/admin","admin.manage"]
 ];
 export default function GlobalNavigation(){
  const pathname=usePathname();
