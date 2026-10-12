@@ -7,7 +7,7 @@ export default async function CommandOverview(){
   const access=await requirePermission("admin.manage");
   if(!access)redirect("/");
   const now=new Date(),soon=new Date(now.getTime()+30*86400000);
-  const [officers,active,submitted,pendingLeave,overdueEquipment,expiringTraining,pendingDocuments,openVacancies,latest]=await Promise.all([
+  const [officers,active,submitted,pendingLeave,overdueEquipment,expiringTraining,pendingDocuments,openVacancies,onDuty,activePatrols,pendingApplications,latest]=await Promise.all([
     prisma.officer.count(),
     prisma.officer.count({where:{status:"ACTIVE"}}),
     prisma.report.count({where:{status:"SUBMITTED"}}),
@@ -16,10 +16,16 @@ export default async function CommandOverview(){
     prisma.trainingRecord.count({where:{expiresAt:{gte:now,lte:soon}}}),
     prisma.policyDocument.count({where:{published:true,requiredAck:true}}),
     prisma.organizationVacancy.count({where:{status:"OPEN"}}),
+    prisma.officer.count({where:{dutyStatus:{in:["ON_DUTY","AVAILABLE"]}}}),
+    prisma.patrolSession.count({where:{endedAt:null}}),
+    prisma.application.count({where:{status:"PENDING"}}),
     prisma.auditLog.findMany({orderBy:{createdAt:"desc"},take:12})
   ]);
   const cards=[
     {title:"Personnel",value:active+"/"+officers,href:"/personnel",note:"Active / total officers"},
+    {title:"On Duty / Available",value:String(onDuty),href:"/patrol",note:"Current live officer duty status"},
+    {title:"Active Patrols",value:String(activePatrols),href:"/patrol",note:"Patrol sessions without end time"},
+    {title:"Recruitment Queue",value:String(pendingApplications),href:"/admin/applications",note:"Applications awaiting review"},
     {title:"Report Review",value:String(submitted),href:"/supervisor",note:"Awaiting supervisor review"},
     {title:"Leave Approvals",value:String(pendingLeave),href:"/loa",note:"Pending requests"},
     {title:"Equipment Overdue",value:String(overdueEquipment),href:"/armory",note:"Unreturned assigned equipment"},
@@ -29,7 +35,7 @@ export default async function CommandOverview(){
   ];
   return <main className="subpage">
     <Link href="/admin" className="back">← Administration</Link>
-    <div className="pagetop"><div><p className="eyebrow">V8.7 · COMMAND OVERVIEW</p><h1>Department Readiness</h1><p>Live department operations, pending work and accountability.</p></div><span className="connpill online">COMMAND ONLY</span></div>
+    <div className="pagetop"><div><p className="eyebrow">V9 FINAL · COMMAND OVERVIEW</p><h1>Department Readiness</h1><p>Live department operations, pending work and accountability.</p></div><span className="connpill online">COMMAND ONLY</span></div>
     <section className="readinesscards">{cards.map(card=><Link key={card.title} href={card.href} className="panel readinesscard">
       <span>{card.title}</span><strong>{card.value}</strong><small>{card.note}</small>
     </Link>)}</section>
