@@ -7,7 +7,7 @@ export const dynamic="force-dynamic";
 
 export default async function OperationsTimeline(){
   const access=await currentAccess();
-  if(!access?.member||!access.appRoles.length)redirect("/");
+  if(!access?.member||!access.appRoles.some(role=>can(role,"personnel.read")))redirect("/");
   const review=access.appRoles.some(role=>can(role,"reports.review"));
   const [reports,announcements,events]=await Promise.all([
     prisma.report.findMany({where:review?{status:{in:["SUBMITTED","APPROVED"]}}:{officer:{userId:access.user.id},status:{in:["SUBMITTED","APPROVED"]}},orderBy:{updatedAt:"desc"},take:15,include:{officer:{include:{user:true}}}}),
