@@ -1,0 +1,7 @@
+import Link from "next/link";
+import {redirect} from "next/navigation";
+import {currentAccess} from "@/lib/authz";
+import {permissions,rolePermissions} from "@/lib/permissions";
+export const dynamic="force-dynamic";
+const roles=["OFFICER","SUPERVISOR","FTO","IA","COMMAND"];
+export default async function PermissionMatrix(){const a=await currentAccess();if(!a?.appRoles.includes("COMMAND"))redirect("/");return <main className="subpage"><Link className="back" href="/admin">← Administration</Link><div className="pagetop"><div><p className="eyebrow">ACCESS CONTROL</p><h1>Permission Matrix</h1><p>Read-only view of effective access granted by each Z6PD group. Discord role mappings are managed separately.</p></div></div><div className="panel v91-permissions-table"><table><thead><tr><th>Permission</th>{roles.map(r=><th key={r}>{r}</th>)}</tr></thead><tbody>{permissions.map(p=><tr key={p}><th scope="row">{p}</th>{roles.map(r=><td key={r} aria-label={rolePermissions[r]?.includes(p)?"Allowed":"Not allowed"}>{rolePermissions[r]?.includes(p)?"✓":"—"}</td>)}</tr>)}</tbody></table></div><p className="hint">Changes to role access require a reviewed server-side code update. This page cannot grant permissions.</p></main>}
