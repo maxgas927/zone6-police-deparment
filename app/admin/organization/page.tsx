@@ -5,6 +5,7 @@ import {currentAccess} from "@/lib/authz";
 import {getGuildRoles} from "@/lib/discord";
 import OrganizationManager from "./OrganizationManager";
 import OrganizationEditor from "./OrganizationEditor";
+import DiscordRankImporter from "./DiscordRankImporter";
 export const dynamic="force-dynamic";
 
 export default async function Organization(){
@@ -26,6 +27,7 @@ export default async function Organization(){
     <Link href="/admin" className="back">← Administration</Link>
     <div className="pagetop"><div><p className="eyebrow">ORGANIZATION CONTROL</p><h1>Ranks & Divisions</h1><p>Map each department rank to a Discord role. Officers are assigned the highest-priority mapped rank automatically.</p></div><span className="connpill online">{mappedRanks}/{ranks.length} RANKS MAPPED</span></div>
     <section className="panel"><div className="paneltitle"><div><b>Automatic Rank Authority</b><span>Discord is the source of truth for officer rank</span></div></div><p className="hint">When an officer signs in or uses a protected Z6PD page, their Discord roles are checked. If several mapped rank roles are present, the rank with the highest Z6PD priority is assigned. Removing all mapped rank roles makes the website rank Unassigned.</p></section>
+    <DiscordRankImporter/>
     <OrganizationManager roles={roles} divisions={divisions}/>
     <OrganizationEditor roles={roles} ranks={ranks} divisions={divisions} subdivisions={subdivisions}/>
     <div className="twocol">
