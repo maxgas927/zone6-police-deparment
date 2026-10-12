@@ -485,3 +485,20 @@ model PersonnelNote {
   createdAt DateTime @default(now())
   @@index([officerId,createdAt])
 }
+
+model PersonnelChangeRequest {
+ id String @id @default(cuid())
+ officerId String
+ kind String
+ targetId String
+ reason String @db.Text
+ status String @default("PENDING")
+ requestedBy String
+ reviewedBy String?
+ reviewNote String? @db.Text
+ reviewedAt DateTime?
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([status,createdAt])
+ @@index([officerId,status])
+}
