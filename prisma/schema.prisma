@@ -134,8 +134,20 @@ model Report {
   type      String
   status    String   @default("DRAFT")
   narrative String?  @db.Text
+  reviewNote String? @db.Text
+  reviewedBy String?
+  reviewedAt DateTime?
   officerId String
   officer   Officer  @relation(fields: [officerId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DiscordWebhook {
+  id String @id @default(cuid())
+  channel String @unique
+  url String @db.Text
+  updatedBy String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
