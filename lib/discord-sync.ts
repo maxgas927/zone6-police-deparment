@@ -1,2 +1,29 @@
-import {prisma} from "@/lib/prisma";import {getGuildMember} from "@/lib/discord";
-export async function syncOfficerFromDiscord(userId:string,discordId:string){const member=await getGuildMember(discordId);if(!member)return {member:false,rank:null,division:null,changed:false};const [ranks,divisions]=await Promise.all([prisma.rank.findMany({where:{discordRoleId:{in:member.roles}},orderBy:{priority:"desc"}}),prisma.division.findMany({where:{discordRoleId:{in:member.roles}},orderBy:{name:"asc"}})]);const officer=await prisma.officer.findUnique({where:{userId},include:{rank:true}});let changed=false;if(officer){const nextRankId=ranks[0]?.id||null,nextDivisionId=divisions[0]?.id||null;changed=officer.rankId!==nextRankId||officer.divisionId!==nextDivisionId;if(changed){await prisma.$transaction(async tx=>{await tx.officer.update({where:{id:officer.id},data:{rankId:nextRankId,divisionId:nextDivisionId}});if(officer.rankId!==nextRankId&&ranks[0])await tx.promotionHistory.create({data:{officerId:officer.id,fromRank:officer.rank?.name||null,toRank:ranks[0].name,reason:"Automatic Discord rank sync",approvedBy:"DISCORD_SYNC"}});await tx.auditLog.create({data:{actorId:userId,action:"DISCORD_PERSONNEL_SYNC",entity:"Officer",entityId:officer.id,metadata:{rank:ranks[0]?.name||null,division:divisions[0]?.name||null}}})})}}return {member:true,rank:ranks[0]?.name||null,division:divisions[0]?.name||null,changed}}
+import {prisma} from "@/lib/prisma";
+import {getGuildMember} from "@/lib/discord";
+
+export async function getDiscordRankForRoles(roles:string[]){
+  if(!roles.length)return null;
+  return prisma.rank.findFirst({where:{discordRoleId:{in:roles}},orderBy:[{priority:"desc"},{name:"asc"}]});
+}
+
+export async function syncOfficerRankFromRoles(userId:string,roles:string[]){
+  const nextRank=await getDiscordRankForRoles(roles);
+  const officer=await prisma.officer.findUnique({where:{userId},include:{rank:true}});
+  if(!officer)return {officer:false,rank:nextRank?.name||null,changed:false};
+  const nextRankId=nextRank?.id||null;
+  if(officer.rankId===nextRankId)return {officer:true,rank:nextRank?.name||null,changed:false};
+
+  await prisma.$transaction(async tx=>{
+    await tx.officer.update({where:{id:officer.id},data:{rankId:nextRankId}});
+    await tx.promotionHistory.create({data:{officerId:officer.id,fromRank:officer.rank?.name||null,toRank:nextRank?.name||"Unassigned",reason:"Automatic Discord rank sync",approvedBy:"DISCORD_SYNC"}});
+    await tx.auditLog.create({data:{actorId:userId,action:"DISCORD_RANK_SYNC",entity:"Officer",entityId:officer.id,metadata:{fromRank:officer.rank?.name||null,toRank:nextRank?.name||null,discordRoleId:nextRank?.discordRoleId||null}}});
+  });
+  return {officer:true,rank:nextRank?.name||null,changed:true};
+}
+
+export async function syncOfficerFromDiscord(userId:string,discordId:string){
+  const member=await getGuildMember(discordId);
+  if(!member)return {member:false,rank:null,changed:false};
+  const result=await syncOfficerRankFromRoles(userId,member.roles);
+  return {member:true,rank:result.rank,changed:result.changed};
+}

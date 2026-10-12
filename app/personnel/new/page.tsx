@@ -1,3 +1,23 @@
-import Link from "next/link";import {redirect} from "next/navigation";import {prisma} from "@/lib/prisma";import {currentAccess} from "@/lib/authz";import {can} from "@/lib/permissions";import PersonnelForm from "./PersonnelForm";
+import Link from "next/link";
+import {redirect} from "next/navigation";
+import {prisma} from "@/lib/prisma";
+import {currentAccess} from "@/lib/authz";
+import {can} from "@/lib/permissions";
+import PersonnelForm from "./PersonnelForm";
 export const dynamic="force-dynamic";
-export default async function NewPersonnel(){const access=await currentAccess();if(!access?.appRoles.some(r=>can(r,"personnel.manage")))redirect("/personnel");const [users,ranks,divisions]=await Promise.all([prisma.user.findMany({where:{officer:null,accounts:{some:{provider:"discord"}}},select:{id:true,name:true,image:true},orderBy:{name:"asc"}}),prisma.rank.findMany({orderBy:{priority:"desc"},select:{id:true,name:true}}),prisma.division.findMany({orderBy:{name:"asc"},select:{id:true,name:true}})]);return <main className="subpage narrow"><Link href="/personnel" className="back">← Department Roster</Link><div className="pagetop"><div><p className="eyebrow">PERSONNEL MANAGEMENT</p><h1>Add Personnel</h1><p>Create an officer record from an existing Discord-linked Z6PD account.</p></div></div>{users.length?<PersonnelForm users={users} ranks={ranks} divisions={divisions}/>:<div className="panel empty">No unassigned Discord users are available. The officer must sign in to Z6PD with Discord first.</div>}</main>}
+
+export default async function NewPersonnel(){
+  const access=await currentAccess();
+  if(!access?.appRoles.some(r=>can(r,"personnel.manage")))redirect("/personnel");
+
+  const [users,divisions]=await Promise.all([
+    prisma.user.findMany({where:{officer:null,accounts:{some:{provider:"discord"}}},select:{id:true,name:true,image:true},orderBy:{name:"asc"}}),
+    prisma.division.findMany({orderBy:{name:"asc"},select:{id:true,name:true}})
+  ]);
+
+  return <main className="subpage narrow">
+    <Link href="/personnel" className="back">← Department Roster</Link>
+    <div className="pagetop"><div><p className="eyebrow">PERSONNEL MANAGEMENT</p><h1>Add Personnel</h1><p>Create an officer record from an existing Discord-linked Z6PD account. Rank is assigned from Discord automatically.</p></div></div>
+    {users.length?<PersonnelForm users={users} divisions={divisions}/>:<div className="panel empty">No unassigned Discord users are available. The officer must sign in to Z6PD with Discord first.</div>}
+  </main>;
+}
