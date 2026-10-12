@@ -512,3 +512,10 @@ model RolePermissionOverride {
  updatedAt DateTime @updatedAt
  @@unique([appRole,permission])
 }
+
+model PersonnelApprovalPolicy {
+ id String @id @default("default")
+ allowCommandSelfReview Boolean @default(false)
+ updatedBy String?
+ updatedAt DateTime @updatedAt
+}
