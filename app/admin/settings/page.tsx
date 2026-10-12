@@ -28,12 +28,12 @@ export default async function Settings(){
 
       <div className="profilefacts">
         <span><small>Current Version</small><b>V8.10</b></span>
-        <span><small>Latest Change</small><b>V8 Production Candidate</b></span>
+        <span><small>Latest Change</small><b>V8.10 Production Release</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
-        <span><small>Deployment</small><b>VERIFYING</b></span>
+        <span><small>Deployment</small><b>LIVE</b></span>
       </div>
 
-      <p className="hint">V8.10 integrates personal notifications with read tracking, mobile navigation, Command readiness metrics, server-enforced report review workflow, department activity timeline, and final production validation. Deployment and security checks are in progress.</p>
+      <p className="hint">V8.10 integrates personal notifications with read tracking, mobile navigation, Command readiness metrics, server-enforced report review workflow, department activity timeline, and final production validation. Production build and deployment verified; ongoing end-to-end permission testing remains recommended.</p>
     </section>
 
     <section className="panel">

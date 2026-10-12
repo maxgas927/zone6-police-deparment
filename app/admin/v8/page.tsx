@@ -26,10 +26,10 @@ export default async function V8(){
     "V8.7 Administration V3 Command Readiness",
     "V8.8 Report Workflow Security",
     "V8.9 Department Activity Timeline",
-    "V8.10 Production Release Candidate"
+    "V8.10 Production Release"
   ];
 
-  const planned=["V8.10 Production verification and final regression checks"];
+  const planned=["Post-release end-to-end permissions and workflow regression testing"];
 
   return <main className="subpage narrow">
     <Link href="/admin" className="back">← Administration</Link>
@@ -37,9 +37,9 @@ export default async function V8(){
       <div>
         <p className="eyebrow">RELEASE STATUS</p>
         <h1>Z6PD V8.10</h1>
-        <p>V8 feature-complete release candidate: notifications, mobile navigation, Command readiness, report security and operations activity. Final production verification is underway. CAD remains intentionally separate.</p>
+        <p>V8.10 production build and deployment verified. Notifications, mobile navigation, Command readiness, report review safeguards and operations activity are included. CAD remains intentionally separate.</p>
       </div>
-      <span className="connpill online">V8.10 RC</span>
+      <span className="connpill online">V8.10 LIVE</span>
     </div>
 
     <section className="panel">
