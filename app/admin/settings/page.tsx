@@ -15,7 +15,7 @@ export default async function Settings(){
         <span><small>Current Version</small><b>V8.3.2</b></span>
         <span><small>Latest Change</small><b>Discord Rank Authority + Access Lockdown</b></span>
         <span><small>Updated</small><b>Oct 12, 2026</b></span>
-        <span><small>Deployment</small><b>DEPLOYING</b></span>
+        <span><small>Deployment</small><b>LIVE</b></span>
       </div>
       <p className="hint">V8.3.2 makes officer rank Discord-authoritative: new personnel receive rank from mapped Discord roles, existing personnel re-sync during authenticated access, manual website rank edits are disabled, the highest-priority mapped role wins, and Discord management endpoints fail closed behind permission checks.</p>
     </section>
