@@ -1,4 +1,3 @@
-import {randomInt} from "node:crypto";
 import {Prisma} from "@prisma/client";
 import {prisma} from "@/lib/prisma";
 import {getGuildMember} from "@/lib/discord";
@@ -29,7 +28,7 @@ export async function getDiscordRankForRoles(roles:string[]){
 
 async function generateUniqueBadgeNumber(){
   for(let attempt=0;attempt<50;attempt++){
-    const badge=String(randomInt(10000,100000));
+    const badge=String(Math.floor(10000+Math.random()*90000));
     const exists=await prisma.officer.findUnique({
       where:{badgeNumber:badge},
       select:{id:true}
