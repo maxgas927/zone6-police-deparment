@@ -2,7 +2,8 @@ import {auth} from "@/auth";
 import {prisma} from "@/lib/prisma";
 import {resolveAccess} from "@/lib/discord";
 import {syncOfficerFromDiscordData} from "@/lib/discord-sync";
-import {can,type Permission} from "@/lib/permissions";
+import {type Permission} from "@/lib/permissions";
+import {hasEffectivePermission} from "@/lib/effective-permissions";
 
 export async function currentAccess(){
   const session=await auth();
@@ -66,6 +67,6 @@ export async function currentAccess(){
 export async function requirePermission(permission:Permission){
   const access=await currentAccess();
   if(!access?.member)return null;
-  if(!access.appRoles.some(role=>can(role,permission)))return null;
+  if(!(await hasEffectivePermission(access.appRoles,permission)))return null;
   return access;
 }
