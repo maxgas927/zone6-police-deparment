@@ -3,7 +3,7 @@ import {useEffect,useRef,useState} from "react";
 import {usePathname} from "next/navigation";
 import Link from "next/link";
 import {Menu,X} from "lucide-react";
-import {can,type Permission} from "@/lib/permissions";
+import {type Permission} from "@/lib/permissions";
 import MobileNav from "./MobileNav";
 
 const links:[string,string,Permission|null][]=[
@@ -19,6 +19,7 @@ const links:[string,string,Permission|null][]=[
 export default function GlobalNavigation(){
  const pathname=usePathname();
  const [roles,setRoles]=useState<string[]>([]);
+ const [granted,setGranted]=useState<string[]>([]);
  const [open,setOpen]=useState(false);
  const trigger=useRef<HTMLButtonElement>(null);
  const drawer=useRef<HTMLElement>(null);
@@ -29,8 +30,8 @@ export default function GlobalNavigation(){
   const controller=new AbortController();
   fetch("/api/discord/sync/me",{cache:"no-store",signal:controller.signal})
    .then(r=>r.ok?r.json():null)
-   .then(data=>{if(!controller.signal.aborted)setRoles(data?.member&&Array.isArray(data.appRoles)?data.appRoles:[])})
-   .catch(()=>{if(!controller.signal.aborted)setRoles([])});
+   .then(data=>{if(!controller.signal.aborted){setRoles(data?.member&&Array.isArray(data.appRoles)?data.appRoles:[]);setGranted(data?.member&&Array.isArray(data.grantedPermissions)?data.grantedPermissions:[])}})
+   .catch(()=>{if(!controller.signal.aborted){setRoles([]);setGranted([])}});
   return ()=>controller.abort();
  },[pathname,hidden]);
  useEffect(()=>{
@@ -43,7 +44,7 @@ export default function GlobalNavigation(){
   return ()=>{window.removeEventListener("keydown",escape);document.body.style.overflow=oldOverflow};
  },[open]);
  if(hidden)return null;
- const visible=links.filter(([, ,permission])=>!permission||roles.some(role=>can(role,permission)));
+ const visible=links.filter(([, ,permission])=>!permission||granted.includes(permission));
  return <>
   {roles.length>0&&<>
    <button ref={trigger} className="z6-global-nav-trigger" type="button" aria-controls="z6-global-nav" aria-expanded={open} onClick={()=>setOpen(true)}><Menu size={18}/> All Sections</button>
