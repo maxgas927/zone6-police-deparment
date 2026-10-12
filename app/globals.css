@@ -216,3 +216,23 @@ nav a{text-decoration:none}
  .z6-global-nav-backdrop{z-index:103!important}
  body{padding-bottom:calc(66px + env(safe-area-inset-bottom))}
 }
+
+/* V9 drawer positioning: override the legacy global aside left inset */
+.z6-global-nav-drawer{
+  left:auto!important;
+  right:0!important;
+  top:0!important;
+  bottom:0!important;
+  inset:0 0 0 auto!important;
+  width:min(330px,92vw)!important;
+  max-width:92vw;
+  height:100dvh!important;
+  padding:0!important;
+  border-right:0!important;
+  border-bottom:0!important;
+  border-left:1px solid #2c4d70!important;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+.z6-global-nav-drawer:not(.open){visibility:hidden}
+.z6-global-nav-drawer.open{visibility:visible}
