@@ -1,3 +1,3 @@
 import "./globals.css";import type {Metadata} from "next";
 export const metadata:Metadata={title:{default:"Z6PD | Command Center",template:"%s | Z6PD"},description:"Secure Zone6 Police Department command, personnel and Discord management system",applicationName:"Z6PD Command Center",themeColor:"#07101d"};
-export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en"><body>{children}</body></html>}
+export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en"><body>{children}<footer className="sitefooter"><b>Developed by Armstrong</b><span>© 2026 Zone6 Police Department. All rights reserved.</span></footer></body></html>}
