@@ -88,6 +88,8 @@ model Officer {
   reports     Report[]
   trainingRecords TrainingRecord[]
   leaveRequests LeaveRequest[]
+  fleetVehicles FleetVehicle[]
+  equipmentAssets EquipmentAsset[]
 }
 
 model Rank {
@@ -219,6 +221,7 @@ model FleetVehicle {
   status String @default("AVAILABLE")
   mileage Int @default(0)
   assignedOfficerId String?
+  assignedOfficer Officer? @relation(fields: [assignedOfficerId], references: [id], onDelete: SetNull)
   notes String? @db.Text
   lastServiceAt DateTime?
   nextServiceMileage Int?
@@ -234,6 +237,7 @@ model EquipmentAsset {
   serialNumber String? @unique
   status String @default("AVAILABLE")
   assignedOfficerId String?
+  assignedOfficer Officer? @relation(fields: [assignedOfficerId], references: [id], onDelete: SetNull)
   issuedAt DateTime?
   dueAt DateTime?
   notes String? @db.Text
