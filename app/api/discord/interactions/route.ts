@@ -41,6 +41,12 @@ export async function POST(req: Request) {
     return respond("Only department Command staff may use Z6PD Discord commands.");
   }
   if (interaction.type === 4) {
+    if (interaction.data?.name === "setnickname") {
+      const focused=interaction.data?.options?.find(o=>o.name==="title"&&o.focused);
+      const q=String(focused?.value||"").toLowerCase().trim();
+      const choices=Object.entries(rankAbbreviations).filter(([name,abbr])=>name.includes(q)||abbr.toLowerCase().includes(q)).slice(0,25).map(([name,abbr])=>({name:name.replace(/\\b\\w/g,ch=>ch.toUpperCase())+" ("+abbr+")",value:abbr}));
+      return NextResponse.json({type:8,data:{choices}});
+    }
     if (interaction.data?.name === "transfer") { const q = String(interaction.data?.options?.find(o=>o.name==="division"&&o.focused)?.value||"").slice(0,80); const rows = await prisma.division.findMany({where:{name:{contains:q,mode:"insensitive"}},take:25,orderBy:{name:"asc"}}); return NextResponse.json({type:8,data:{choices:rows.map(x=>({name:x.name,value:x.id}))}}); }
     if (!["promote", "demote"].includes(interaction.data?.name || "")) return NextResponse.json({ type: 8, data: { choices: [] } });
     const focused = interaction.data?.options?.find(o => o.name === "rank" && o.focused);
