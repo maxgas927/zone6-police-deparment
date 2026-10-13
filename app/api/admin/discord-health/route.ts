@@ -11,6 +11,7 @@ export async function GET(){
   lastManualSync:last?{at:last.createdAt,result:last.metadata}:null,
   lastAutomaticSyncAt:globalThis.__z6pdLastDepartmentDiscordSyncAt||null,
   nextAutomaticSyncAt:globalThis.__z6pdNextDepartmentDiscordSyncAt||null,
+  lastAutomaticSyncResult:globalThis.__z6pdLastDepartmentDiscordSyncResult||null,
   checkedAt:new Date().toISOString()
  },{headers:{"Cache-Control":"no-store"}});
 }
