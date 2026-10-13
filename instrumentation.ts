@@ -1,6 +1,7 @@
 declare global {
  var __z6pdLastDepartmentDiscordSyncAt:number|undefined;
  var __z6pdNextDepartmentDiscordSyncAt:number|undefined;
+ var __z6pdLastDepartmentDiscordSyncResult:Record<string,number|boolean>|undefined;
 }
 let started=false;
 export async function register(){
@@ -16,6 +17,7 @@ export async function register(){
   try{
    const result=await fullDepartmentDiscordSync();
    globalThis.__z6pdLastDepartmentDiscordSyncAt=Date.now();
+   globalThis.__z6pdLastDepartmentDiscordSyncResult=result;
    console.log("DISCORD_DEPARTMENT_AUTO_SYNC",result);
   }catch(error){console.error("DISCORD_DEPARTMENT_AUTO_SYNC_FAILED",error)}
   finally{running=false}
