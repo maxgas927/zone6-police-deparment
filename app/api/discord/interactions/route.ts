@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     if (interaction.data?.name === "setnickname") {
       const focused=interaction.data?.options?.find(o=>o.name==="title"&&o.focused);
       const q=String(focused?.value||"").toLowerCase().trim();
-      const choices=Object.entries(rankAbbreviations).filter(([name,abbr])=>name.includes(q)||abbr.toLowerCase().includes(q)).slice(0,25).map(([name,abbr])=>({name:name.replace(/\\b\\w/g,ch=>ch.toUpperCase())+" ("+abbr+")",value:abbr}));
+      const choices=Object.entries(rankAbbreviations).filter(([name,abbr])=>name.includes(q)||abbr.toLowerCase().includes(q)).slice(0,25).map(([name,abbr])=>({name:name.replace(/\b\w/g,ch=>ch.toUpperCase())+" ("+abbr+")",value:abbr}));
       return NextResponse.json({type:8,data:{choices}});
     }
     if (interaction.data?.name === "transfer") { const q = String(interaction.data?.options?.find(o=>o.name==="division"&&o.focused)?.value||"").slice(0,80); const rows = await prisma.division.findMany({where:{name:{contains:q,mode:"insensitive"}},take:25,orderBy:{name:"asc"}}); return NextResponse.json({type:8,data:{choices:rows.map(x=>({name:x.name,value:x.id}))}}); }
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     const focused = interaction.data?.options?.find(o => o.name === "rank" && o.focused);
     const query = typeof focused?.value === "string" ? focused.value.slice(0,80) : "";
     const ranks = await prisma.rank.findMany({ where: { discordRoleId: { not: null }, name: { contains: query, mode: "insensitive" } }, orderBy: { priority: "desc" }, take: 25 });
-    return NextResponse.json({ type: 8, data: { choices: ranks.map(r => ({ name: r.name.slice(0,100), value: r.id })) } });
+    return NextResponse.json({ type: 8, data: { choices: ranks.map(r => ({ name: (r.name+" ("+(rankAbbreviations[r.name.toLowerCase()]||r.name)+")").slice(0,100), value: r.id })) } });
   }
   const discordId = interaction.member?.user?.id;
   if (!discordId) return respond("Discord member not found");
