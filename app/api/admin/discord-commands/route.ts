@@ -12,8 +12,9 @@ const commands = [
  ] },
  { name: "demote", description: "Request an officer demotion", options: [
   { name: "officer", description: "Officer", type: 6, required: true },
-  { name: "rank", description: "Target rank name", type: 3, required: true },
-  { name: "reason", description: "Reason", type: 3, required: true }
+  { name: "rank", description: "Select a department rank", type: 3, required: true, autocomplete: true },
+  { name: "reason", description: "Reason", type: 3, required: true },
+  { name: "bypass", description: "Command only: apply immediately without approval", type: 5, required: false }
  ] },
  { name: "rankstatus", description: "Show your department rank" }
 ];
