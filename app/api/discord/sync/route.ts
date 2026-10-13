@@ -8,7 +8,12 @@ export async function POST(){
   const access=await requirePermission("discord.manage");
   if(!access)return NextResponse.json({error:"Forbidden"},{status:403});
 
-  const result=await fullDepartmentDiscordSync();
+  let result;
+  try{result=await fullDepartmentDiscordSync();}
+  catch(error){
+    await prisma.auditLog.create({data:{actorId:access.user.id,action:"DISCORD_DEPARTMENT_SYNC_FAILED",entity:"Discord",metadata:{source:"MANUAL",error:error instanceof Error?error.message:"Unknown error"}}});
+    return NextResponse.json({error:"Discord synchronization failed. Review audit logs."},{status:503});
+  }
   await prisma.auditLog.create({
     data:{
       actorId:access.user.id,
