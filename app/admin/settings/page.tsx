@@ -31,13 +31,13 @@ export default async function Settings(){
       </div>
 
       <div className="profilefacts">
-        <span><small>Current Version</small><b>V9.2.3</b></span>
-        <span><small>Latest Change</small><b>Discord V4, Global Search & Mobile Release</b></span>
-        <span><small>Updated</small><b>Oct 12, 2026</b></span>
-        <span><small>Deployment</small><b>LIVE</b></span>
+        <span><small>Current Version</small><b>V9.2.4</b></span>
+        <span><small>Latest Change</small><b>Google Sheets Roster Preview (read-only)</b></span>
+        <span><small>Updated</small><b>Oct 13, 2026</b></span>
+        <span><small>Deployment</small><b>DEPLOYING</b></span>
       </div>
 
-      <p className="hint">V9.2.3 completes the V8 final enhancements with Discord 429 backoff and member request deduplication, safe role-mapping deletion audit, permission-aware category search, a slide-out navigation menu on every department page, mobile bottom navigation, an operational health endpoint, and GitHub TypeScript checks.</p>
+      <p className="hint">V9.2.4 adds a Command-only Google Sheets roster preview. The website uses a separately configured Google service account with read-only access; no roster records, Discord roles or spreadsheet cells are modified. Import and two-way sync remain disabled pending identity matching.</p>
     </section>
 
     <PersonnelApprovalSettings initial={policy?.allowCommandSelfReview??false}/>
