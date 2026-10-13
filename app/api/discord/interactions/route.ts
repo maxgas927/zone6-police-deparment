@@ -29,6 +29,16 @@ export async function POST(req: Request) {
   if (interaction.type === 1) return NextResponse.json({ type: 1 });
   if (interaction.type !== 2 && interaction.type !== 4) return respond("Unsupported interaction");
   if (!process.env.DISCORD_GUILD_ID || interaction.guild_id !== process.env.DISCORD_GUILD_ID) return respond("This command is restricted to the department server.");
+  // Every slash command and autocomplete request requires a mapped Command role.
+  const commandMappings = await prisma.discordRoleMapping.findMany({
+    where: { discordRoleId: { in: interaction.member?.roles || [] }, syncEnabled: true, appRole: "COMMAND" }
+  });
+  const commandAuthorized = commandMappings.length > 0 &&
+    await hasEffectivePermission(["COMMAND"], "admin.manage");
+  if (!commandAuthorized) {
+    if (interaction.type === 4) return NextResponse.json({ type: 8, data: { choices: [] } });
+    return respond("Only department Command staff may use Z6PD Discord commands.");
+  }
   if (interaction.type === 4) {
     if (interaction.data?.name === "transfer") { const q = String(interaction.data?.options?.find(o=>o.name==="division"&&o.focused)?.value||"").slice(0,80); const rows = await prisma.division.findMany({where:{name:{contains:q,mode:"insensitive"}},take:25,orderBy:{name:"asc"}}); return NextResponse.json({type:8,data:{choices:rows.map(x=>({name:x.name,value:x.id}))}}); }
     if (!["promote", "demote"].includes(interaction.data?.name || "")) return NextResponse.json({ type: 8, data: { choices: [] } });
