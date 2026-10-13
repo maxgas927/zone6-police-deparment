@@ -2,6 +2,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 import { createPublicKey, verify } from "node:crypto";
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { hasEffectivePermission } from "@/lib/effective-permissions";
 import type { Permission } from "@/lib/permissions";
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
   const isCommand = roles.includes("COMMAND") && await permitted("admin.manage");
   const lookupTargetAccount = async () => prisma.account.findFirst({where:{provider:"discord",providerAccountId:String(options.officer||discordId)}});
   const targetOfficer = async () => { const a=await lookupTargetAccount();return a?prisma.officer.findUnique({where:{userId:a.userId},include:{user:true,rank:true,division:true}}):null; };
-  const log = async (action:string,entity:string,entityId:string,metadata:Record<string,unknown>={})=>prisma.auditLog.create({data:{actorId:account.userId,action,entity,entityId,metadata}});
+  const log = async (action:string,entity:string,entityId:string,metadata:Prisma.InputJsonObject={})=>prisma.auditLog.create({data:{actorId:account.userId,action,entity,entityId,metadata}});
   const links:Record<string,string>={hire:"/admin/organization",approve:"/admin/personnel-approvals",deny:"/admin/personnel-approvals",report:"/reports",loa:"/leave"};
   if (command && links[command]) { if(["hire","approve","deny"].includes(command)&&!isCommand)return respond("Command permission required.");return respond("Continue securely on the Z6PD website: https://z6pd.onrender.com"+links[command]); }
   if(command==="officerinfo"){const o=await targetOfficer();return respond(o?"Officer #"+o.badgeNumber+" | "+(o.user.name||"Unknown")+" | "+(o.rank?.name||"Unranked")+" | "+(o.division?.name||"No division")+" | "+o.status:"Officer not found.");}
