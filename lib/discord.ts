@@ -19,7 +19,7 @@ async function discord(path:string,init?:RequestInit):Promise<Response>{
  try{
   for(let attempt=0;attempt<4;attempt++){
    const cooldown=discordCooldownUntil-Date.now();
-   if(cooldown>0)await sleep(cooldown);
+   if(cooldown>0)return new Response(null,{status:429});
    const response=await fetch("https://discord.com/api/v10"+path,{
     ...init,
     headers:{Authorization:"Bot "+token(),"Content-Type":"application/json",...(init?.headers||{})},
@@ -32,7 +32,7 @@ async function discord(path:string,init?:RequestInit):Promise<Response>{
    const wait=Math.min(60000,Math.max(1000,Number.isFinite(seconds)?Number(seconds)*1000:Math.pow(2,attempt)*1500));
    discordCooldownUntil=Math.max(discordCooldownUntil,Date.now()+wait);
    console.warn("DISCORD_RATE_LIMIT",{attempt:attempt+1,delayMs:wait,global:body?.global===true});
-   if(attempt===3)return response;
+   return response;
   }
   throw new Error("Discord retry limit reached");
  }finally{release()}
