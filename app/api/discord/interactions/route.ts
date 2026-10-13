@@ -49,8 +49,8 @@ export async function POST(req: Request) {
   const roles = [...new Set(mapped.map(x=>x.appRole))];
   const permitted = async (permission:string) => hasEffectivePermission(roles,permission);
   const isCommand = roles.includes("COMMAND") && await permitted("admin.manage");
-  const targetAccount = async () => prisma.account.findFirst({where:{provider:"discord",providerAccountId:String(options.officer||discordId)}});
-  const targetOfficer = async () => { const a=await targetAccount();return a?prisma.officer.findUnique({where:{userId:a.userId},include:{user:true,rank:true,division:true}}):null; };
+  const lookupTargetAccount = async () => prisma.account.findFirst({where:{provider:"discord",providerAccountId:String(options.officer||discordId)}});
+  const targetOfficer = async () => { const a=await lookupTargetAccount();return a?prisma.officer.findUnique({where:{userId:a.userId},include:{user:true,rank:true,division:true}}):null; };
   const log = async (action:string,entity:string,entityId:string,metadata:Record<string,unknown>={})=>prisma.auditLog.create({data:{actorId:account.userId,action,entity,entityId,metadata}});
   const links:Record<string,string>={hire:"/admin/organization",approve:"/admin/personnel-approvals",deny:"/admin/personnel-approvals",report:"/reports",loa:"/leave"};
   if (command && links[command]) { if(["hire","approve","deny"].includes(command)&&!isCommand)return respond("Command permission required.");return respond("Continue securely on the Z6PD website: https://z6pd.onrender.com"+links[command]); }
