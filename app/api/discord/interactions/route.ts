@@ -10,7 +10,7 @@ import { changeDiscordRank, changeDiscordCallsign, setDiscordNickname } from "@/
 
 type Option = { name: string; value?: string | boolean; focused?: boolean };
 type Interaction = { type: number; guild_id?: string; member?: { user?: { id: string }; roles?: string[] }; data?: { name?: string; options?: Option[] } };
-const rankAbbreviations:Record<string,string>={"recruit":"RCT","cadet":"CDT","probationary officer":"PO","police officer":"OFC","officer i":"OFC I","officer ii":"OFC II","officer iii":"OFC III","senior officer":"S/OFC","corporal":"CPL","sergeant":"SGT","staff sergeant":"SSGT","lieutenant":"LT","captain":"CPT","major":"MAJ","commander":"CMDR","deputy chief":"D/CHIEF","assistant chief":"A/CHIEF","chief of police":"CHIEF","sheriff":"SHF","deputy":"DEP","detective":"DET","senior detective":"S/DET","field training officer":"FTO"};
+const rankAbbreviations:Record<string,string>={"recruit":"REC","cadet":"CDT","probationary officer":"P/O","police officer":"OFF","officer i":"PO I","officer ii":"PO II","officer iii":"PO III","senior officer":"SPO","corporal":"CPL","sergeant":"SGT","staff sergeant":"SSG","lieutenant":"LT","captain":"CPT","major":"MAJ","commander":"CDR","deputy chief":"DCOP","assistant chief":"ACOP","chief of police":"COP","sheriff":"SHF","deputy":"DPTY","detective":"DET","senior detective":"SDET","field training officer":"FTO"};
 const respond = (content: string) => NextResponse.json({ type: 4, data: { content, flags: 64 } });
 
 export async function POST(req: Request) {
