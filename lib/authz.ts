@@ -5,6 +5,7 @@ import {syncOfficerFromDiscordData} from "@/lib/discord-sync";
 import {type Permission} from "@/lib/permissions";
 import {hasEffectivePermission} from "@/lib/effective-permissions";
 
+const syncCache=new Map<string,number>();
 export async function currentAccess(){
   const session=await auth();
   if(!session?.user?.email)return null;
@@ -34,11 +35,14 @@ export async function currentAccess(){
 
     // Personnel sync failures must not revoke valid Discord role-based access.
     try{
+      if((syncCache.get(user.id)||0)>Date.now())return {session,user,discordId:account.providerAccountId,...access,personnelSyncChanged:false,personnelFileCreated:false};
       const personnelSync=await syncOfficerFromDiscordData(
         user.id,
         access.roles,
         access.nickname
       );
+      syncCache.set(user.id,Date.now()+300000);
+      if(syncCache.size>5000)syncCache.clear();
       return {
         session,user,discordId:account.providerAccountId,...access,
         personnelSyncChanged:personnelSync.changed,
