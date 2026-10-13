@@ -10,6 +10,7 @@ import { changeDiscordRank, changeDiscordCallsign, setDiscordNickname } from "@/
 
 type Option = { name: string; value?: string | boolean; focused?: boolean };
 type Interaction = { type: number; guild_id?: string; member?: { user?: { id: string }; roles?: string[] }; data?: { name?: string; options?: Option[] } };
+const rankAbbreviations:Record<string,string>={"recruit":"RCT","cadet":"CDT","probationary officer":"PO","police officer":"OFC","officer i":"OFC I","officer ii":"OFC II","officer iii":"OFC III","senior officer":"S/OFC","corporal":"CPL","sergeant":"SGT","staff sergeant":"SSGT","lieutenant":"LT","captain":"CPT","major":"MAJ","commander":"CMDR","deputy chief":"D/CHIEF","assistant chief":"A/CHIEF","chief of police":"CHIEF","sheriff":"SHF","deputy":"DEP","detective":"DET","senior detective":"S/DET","field training officer":"FTO"};
 const respond = (content: string) => NextResponse.json({ type: 4, data: { content, flags: 64 } });
 
 export async function POST(req: Request) {
@@ -84,7 +85,8 @@ export async function POST(req: Request) {
     if(!o||!/^\d{16,22}$/.test(targetId))return respond("Select an officer linked to the Z6PD website.");
     const callsign=String(options.callsign||o.callsign||"").trim().toUpperCase();
     const name=String(options.name||o.user.name||"").trim();
-    const title=String(options.title||o.rank?.name||"").trim();
+    const rawTitle=String(options.title||o.rank?.name||"").trim();
+    const title=rankAbbreviations[rawTitle.toLowerCase()]||rawTitle;
     if(!/^[A-Z0-9][A-Z0-9-]{1,14}$/.test(callsign)||!name||!title||[name,title].some(s=>s.includes("|")||/[\r\n]/.test(s)))return respond("Valid callsign, rank/title and name are required. Do not use | in fields.");
     const nickname=callsign+" | "+title+" | "+name;
     if(nickname.length>32)return respond("Nickname exceeds Discord's 32-character limit ("+nickname.length+"). Shorten the title or name.");
