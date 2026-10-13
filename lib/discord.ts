@@ -74,3 +74,19 @@ export async function changeDiscordRank(discordId:string,fromRoleId:string|null,
  memberCache.delete(discordId);
  return {added:!member.roles.includes(toRoleId),removed:currentRankRoles.length>0};
 }
+
+export async function changeDiscordCallsign(discordId:string,callsign:string){
+ if(!/^[A-Za-z0-9][A-Za-z0-9-]{1,14}$/.test(callsign))throw new Error("Callsign must be 2–15 letters, numbers or hyphens.");
+ const member=await getGuildMember(discordId);
+ if(!member)throw new Error("Officer is not in the department Discord server.");
+ const oldNickname=member.nick;
+ if(!oldNickname)throw new Error("Officer needs a server nickname in Callsign | Title | Name format.");
+ const parts=oldNickname.split("|").map(p=>p.trim());
+ if(parts.length<2||parts.some(p=>!p))throw new Error("Officer nickname must use Callsign | Title | Name format.");
+ const nickname=[callsign,...parts.slice(1)].join(" | ");
+ if(nickname.length>32)throw new Error("New Discord nickname exceeds 32 characters.");
+ const response=await discord("/guilds/"+guild()+"/members/"+discordId,{method:"PATCH",body:JSON.stringify({nick:nickname})});
+ if(!response.ok)throw new Error("Discord nickname update failed (HTTP "+response.status+"). Check Manage Nicknames permission and bot role hierarchy.");
+ memberCache.delete(discordId);
+ return {oldNickname,nickname};
+}
