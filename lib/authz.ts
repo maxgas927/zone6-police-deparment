@@ -32,20 +32,27 @@ export async function currentAccess(){
       };
     }
 
-    const personnelSync=await syncOfficerFromDiscordData(
-      user.id,
-      access.roles,
-      access.nickname
-    );
-
-    return {
-      session,
-      user,
-      discordId:account.providerAccountId,
-      ...access,
-      personnelSyncChanged:personnelSync.changed,
-      personnelFileCreated:personnelSync.created===true
-    };
+    // Personnel sync failures must not revoke valid Discord role-based access.
+    try{
+      const personnelSync=await syncOfficerFromDiscordData(
+        user.id,
+        access.roles,
+        access.nickname
+      );
+      return {
+        session,user,discordId:account.providerAccountId,...access,
+        personnelSyncChanged:personnelSync.changed,
+        personnelFileCreated:personnelSync.created===true
+      };
+    }catch(error){
+      console.error("PERSONNEL_SYNC_FAILED_ACCESS_PRESERVED",error);
+      return {
+        session,user,discordId:account.providerAccountId,...access,
+        personnelSyncChanged:false,
+        personnelFileCreated:false,
+        personnelSyncError:true
+      };
+    }
   }catch(error){
     console.error("DISCORD_ACCESS_CHECK_FAILED",error);
     return {
