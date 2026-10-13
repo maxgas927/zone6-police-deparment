@@ -17,6 +17,7 @@ export async function GET(){
     grantedPermissions:granted,
     personnelChanged:access.personnelSyncChanged,
     personnelFileCreated:access.personnelFileCreated,
-    accessError:"accessError" in access?access.accessError:false
+    accessError:"accessError" in access?access.accessError:false,
+    accessStatus:"accessError" in access&&access.accessError?"DISCORD_TEMPORARILY_UNAVAILABLE":access.member?"VERIFIED":"NOT_IN_GUILD"
   });
 }
