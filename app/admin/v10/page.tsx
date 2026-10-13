@@ -18,17 +18,18 @@ const modules=[
 export default async function V10(){
  const a=await requirePermission("admin.manage");
  if(!a?.appRoles.includes("COMMAND"))redirect("/");
- const [pending,activePatrols,trainingAlerts,reports,officers]=await Promise.all([
+ const [pending,activePatrols,trainingAlerts,reports,officers,failedSync]=await Promise.all([
   prisma.personnelChangeRequest.count({where:{status:{in:["PENDING","SYNC_FAILED"]}}}),
   prisma.patrolSession.count({where:{endedAt:null}}),
   prisma.trainingRecord.count({where:{expiresAt:{lte:new Date(Date.now()+30*86400000)}}}),
   prisma.report.count({where:{status:"SUBMITTED"}}),
-  prisma.officer.count()
+  prisma.officer.count(),
+  prisma.personnelChangeRequest.count({where:{status:"SYNC_FAILED"}})
  ]);
  return <main className="subpage v4page"><Link className="back" href="/admin">← Administration</Link>
  <div className="pagetop"><div><p className="eyebrow">Z6PD · V10 COMMAND PLATFORM</p><h1>Department Operations Hub</h1><p>One secure starting point for Command workflows and department readiness.</p></div><span className="connpill online">COMMAND ONLY</span></div>
  <div className="personnelstats"><div><b>{officers}</b><span>Personnel</span></div><div><b>{activePatrols}</b><span>Live Patrols</span></div><div><b>{pending}</b><span>Approval Actions</span></div><div><b>{trainingAlerts}</b><span>Training Alerts</span></div><div><b>{reports}</b><span>Reports Awaiting Review</span></div></div>
- <section className="panel"><div className="paneltitle"><div><b>Department Modules</b><span>V10 series operational workspace</span></div><Link href="/admin/v4">Previous command center →</Link></div><div className="v4shortcuts">{modules.map(([version,name,href,description])=><Link href={href} key={version}><b>{version} · {name} →</b><small>{description}</small></Link>)}</div></section>
+ <section className="panel"><h3>Command priorities</h3><p>{pending} personnel actions require review; {failedSync} have failed synchronization and may require a retry. {reports} submitted reports await supervisor review.</p><div className="v4shortcuts"><Link href="/admin/personnel-approvals"><b>Review personnel changes →</b><small>Approval and Discord synchronization workflow</small></Link><Link href="/supervisor"><b>Open supervisor review →</b><small>Submitted reports and staffing alerts</small></Link></div></section><section className="panel"><div className="paneltitle"><div><b>Department Modules</b><span>V10 series operational workspace</span></div><Link href="/admin/v4">Previous command center →</Link></div><div className="v4shortcuts">{modules.map(([version,name,href,description])=><Link href={href} key={version}><b>{version} · {name} →</b><small>{description}</small></Link>)}</div></section>
  <p className="hint">Module links use existing protected workflows. Feature availability depends on each release and its deployment status.</p>
  </main>;
 }
