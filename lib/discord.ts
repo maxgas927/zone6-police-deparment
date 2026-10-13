@@ -5,19 +5,25 @@ const guild=()=>process.env.DISCORD_GUILD_ID;
 const token=()=>process.env.DISCORD_BOT_TOKEN;
 const memberCache=new Map<string,{until:number;value:DiscordGuildMember|null}>();
 const pending=new Map<string,Promise<DiscordGuildMember|null>>();
+let discordCooldownUntil=0;
 async function discord(path:string,init?:RequestInit){
  if(!guild()||!token())throw new Error("Discord is not configured");
- for(let attempt=0;attempt<3;attempt++){
+ for(let attempt=0;attempt<4;attempt++){
+  const cooldown=discordCooldownUntil-Date.now();
+  if(cooldown>0)await new Promise(resolve=>setTimeout(resolve,cooldown));
   const response=await fetch("https://discord.com/api/v10"+path,{
    ...init,
    headers:{Authorization:"Bot "+token(),"Content-Type":"application/json",...(init?.headers||{})},
    cache:"no-store"
   });
-  if(response.status!==429||attempt===2)return response;
-  const retry=Number(response.headers.get("retry-after")||"1");
-  const wait=Math.min(3000,Math.max(500,Number.isFinite(retry)?retry*1000:1000));
+  if(response.status!==429)return response;
+  const retryHeader=Number(response.headers.get("retry-after"));
+  const retryBody=await response.clone().json().catch(()=>null) as {retry_after?:number}|null;
+  const seconds=Number.isFinite(retryHeader)&&retryHeader>0?retryHeader:retryBody?.retry_after;
+  const wait=Math.min(30000,Math.max(1000,Number.isFinite(seconds)?Number(seconds)*1000:Math.pow(2,attempt)*1500));
+  discordCooldownUntil=Math.max(discordCooldownUntil,Date.now()+wait);
   console.warn("DISCORD_RATE_LIMIT_RETRY",{attempt:attempt+1,delayMs:wait});
-  await new Promise(resolve=>setTimeout(resolve,wait));
+  if(attempt===3)return response;
  }
  throw new Error("Discord request retry limit reached");
 }
@@ -41,7 +47,7 @@ export async function getGuildMember(discordId:string):Promise<DiscordGuildMembe
   }
   if(!response.ok)throw new Error("Discord member failed: "+response.status);
   const member=await response.json() as DiscordGuildMember;
-  memberCache.set(discordId,{until:Date.now()+12000,value:member});
+  memberCache.set(discordId,{until:Date.now()+60000,value:member});
   if(memberCache.size>5000)memberCache.clear();
   return member;
  })();
