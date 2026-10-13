@@ -90,3 +90,13 @@ export async function changeDiscordCallsign(discordId:string,callsign:string){
  memberCache.delete(discordId);
  return {oldNickname,nickname};
 }
+
+export async function setDiscordNickname(discordId:string,nickname:string){
+ if(!nickname||nickname.length>32)throw new Error("Discord nickname must be 1–32 characters.");
+ const member=await getGuildMember(discordId);
+ if(!member)throw new Error("Officer is not in the department Discord server.");
+ const response=await discord("/guilds/"+guild()+"/members/"+discordId,{method:"PATCH",body:JSON.stringify({nick:nickname})});
+ if(!response.ok)throw new Error("Discord nickname update failed (HTTP "+response.status+"). Check Manage Nicknames permission and bot role hierarchy.");
+ memberCache.delete(discordId);
+ return {oldNickname:member.nick,nickname};
+}
