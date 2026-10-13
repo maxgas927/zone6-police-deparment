@@ -5,34 +5,47 @@ const guild=()=>process.env.DISCORD_GUILD_ID;
 const token=()=>process.env.DISCORD_BOT_TOKEN;
 const memberCache=new Map<string,{until:number;value:DiscordGuildMember|null}>();
 const pending=new Map<string,Promise<DiscordGuildMember|null>>();
+let rolesCache:{until:number;value:DiscordGuildRole[]}|null=null;
 let discordCooldownUntil=0;
-async function discord(path:string,init?:RequestInit){
+let queue:Promise<void>=Promise.resolve();
+const sleep=(ms:number)=>new Promise<void>(resolve=>setTimeout(resolve,ms));
+async function discord(path:string,init?:RequestInit):Promise<Response>{
  if(!guild()||!token())throw new Error("Discord is not configured");
- for(let attempt=0;attempt<4;attempt++){
-  const cooldown=discordCooldownUntil-Date.now();
-  if(cooldown>0)await new Promise(resolve=>setTimeout(resolve,cooldown));
-  const response=await fetch("https://discord.com/api/v10"+path,{
-   ...init,
-   headers:{Authorization:"Bot "+token(),"Content-Type":"application/json",...(init?.headers||{})},
-   cache:"no-store"
-  });
-  if(response.status!==429)return response;
-  const retryHeader=Number(response.headers.get("retry-after"));
-  const retryBody=await response.clone().json().catch(()=>null) as {retry_after?:number}|null;
-  const seconds=Number.isFinite(retryHeader)&&retryHeader>0?retryHeader:retryBody?.retry_after;
-  const wait=Math.min(30000,Math.max(1000,Number.isFinite(seconds)?Number(seconds)*1000:Math.pow(2,attempt)*1500));
-  discordCooldownUntil=Math.max(discordCooldownUntil,Date.now()+wait);
-  console.warn("DISCORD_RATE_LIMIT_RETRY",{attempt:attempt+1,delayMs:wait});
-  if(attempt===3)return response;
- }
- throw new Error("Discord request retry limit reached");
+ // Serialize requests in this process to prevent burst traffic.
+ const previous=queue;
+ let release!:()=>void;
+ queue=new Promise<void>(resolve=>{release=resolve});
+ await previous;
+ try{
+  for(let attempt=0;attempt<4;attempt++){
+   const cooldown=discordCooldownUntil-Date.now();
+   if(cooldown>0)await sleep(cooldown);
+   const response=await fetch("https://discord.com/api/v10"+path,{
+    ...init,
+    headers:{Authorization:"Bot "+token(),"Content-Type":"application/json",...(init?.headers||{})},
+    cache:"no-store"
+   });
+   if(response.status!==429)return response;
+   const body=await response.clone().json().catch(()=>null) as {retry_after?:number;global?:boolean}|null;
+   const header=Number(response.headers.get("retry-after"));
+   const seconds=Number.isFinite(header)&&header>0?header:body?.retry_after;
+   const wait=Math.min(60000,Math.max(1000,Number.isFinite(seconds)?Number(seconds)*1000:Math.pow(2,attempt)*1500));
+   discordCooldownUntil=Math.max(discordCooldownUntil,Date.now()+wait);
+   console.warn("DISCORD_RATE_LIMIT",{attempt:attempt+1,delayMs:wait,global:body?.global===true});
+   if(attempt===3)return response;
+  }
+  throw new Error("Discord retry limit reached");
+ }finally{release()}
 }
 export async function getGuildRoles():Promise<DiscordGuildRole[]>{
+ if(rolesCache&&rolesCache.until>Date.now())return rolesCache.value;
  const response=await discord("/guilds/"+guild()+"/roles");
  if(!response.ok)throw new Error("Discord roles failed: "+response.status);
- return (await response.json() as DiscordGuildRole[])
+ const roles=(await response.json() as DiscordGuildRole[])
   .filter(role=>role.name!=="@everyone")
   .sort((a,b)=>b.position-a.position);
+ rolesCache={until:Date.now()+300000,value:roles};
+ return roles;
 }
 export async function getGuildMember(discordId:string):Promise<DiscordGuildMember|null>{
  const cached=memberCache.get(discordId);
@@ -47,7 +60,7 @@ export async function getGuildMember(discordId:string):Promise<DiscordGuildMembe
   }
   if(!response.ok)throw new Error("Discord member failed: "+response.status);
   const member=await response.json() as DiscordGuildMember;
-  memberCache.set(discordId,{until:Date.now()+60000,value:member});
+  memberCache.set(discordId,{until:Date.now()+300000,value:member});
   if(memberCache.size>5000)memberCache.clear();
   return member;
  })();
@@ -78,6 +91,7 @@ export async function changeDiscordRank(discordId:string,fromRoleId:string|null,
   if(!removed.ok)throw new Error("New rank assigned, but old rank "+oldRoleId+" could not be removed (HTTP "+removed.status+"). Reconcile in Discord and retry.");
  }
  memberCache.delete(discordId);
+ rolesCache=null;
  return {added:!member.roles.includes(toRoleId),removed:currentRankRoles.length>0};
 }
 
