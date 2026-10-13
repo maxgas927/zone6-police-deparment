@@ -6,7 +6,7 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { hasEffectivePermission } from "@/lib/effective-permissions";
 import type { Permission } from "@/lib/permissions";
-import { changeDiscordRank, changeDiscordCallsign } from "@/lib/discord";
+import { changeDiscordRank, changeDiscordCallsign, setDiscordNickname } from "@/lib/discord";
 
 type Option = { name: string; value?: string | boolean; focused?: boolean };
 type Interaction = { type: number; guild_id?: string; member?: { user?: { id: string }; roles?: string[] }; data?: { name?: string; options?: Option[] } };
@@ -77,6 +77,30 @@ export async function POST(req: Request) {
   if(command==="bolo"||command==="warrant"){if(!await permitted("reports.review"))return respond("Reports permission required.");const rows=command==="bolo"?await prisma.bolo.findMany({where:{status:"ACTIVE"},take:10,orderBy:{createdAt:"desc"}}):await prisma.warrant.findMany({where:{status:"ACTIVE"},take:10,orderBy:{createdAt:"desc"}});return respond(rows.map(x=>x.number+" — "+("subject" in x?x.subject:"")).join("\n")||"No active records.");}
   if(command==="training"){const o=await targetOfficer();if(!o)return respond("Officer not found.");if(o.userId!==account.userId&&!await permitted("personnel.manage"))return respond("Personnel permission required.");const rows=await prisma.trainingRecord.findMany({where:{officerId:o.id},include:{course:true},take:15});return respond(rows.map(x=>x.course.name).join("\n")||"No training records.");}
   if(command==="transfer"){if(!await permitted("personnel.manage"))return respond("Personnel permission required.");const o=await targetOfficer();const division=await prisma.division.findUnique({where:{id:String(options.division||"")}});const reason=String(options.reason||"").trim();if(!o||!division||o.divisionId===division.id||reason.length<5)return respond("Valid officer, different division, and reason required.");const pending=await prisma.personnelChangeRequest.findFirst({where:{officerId:o.id,kind:"TRANSFER",status:{in:["PENDING","SYNCING","SYNC_FAILED"]}}});if(pending)return respond("Transfer already pending.");const item=await prisma.$transaction(async tx=>{const x=await tx.personnelChangeRequest.create({data:{officerId:o.id,kind:"TRANSFER",targetId:division.id,reason,requestedBy:account.userId}});await tx.auditLog.create({data:{actorId:account.userId,action:"DISCORD_TRANSFER_REQUESTED",entity:"PersonnelChangeRequest",entityId:x.id}});return x;});return respond("Transfer request "+item.id+" submitted for Command approval.");}
+  if(command==="setnickname"){
+    if(!isCommand)return respond("Command only.");
+    const o=await targetOfficer();
+    const targetId=String(options.officer||"");
+    if(!o||!/^\d{16,22}$/.test(targetId))return respond("Select an officer linked to the Z6PD website.");
+    const callsign=String(options.callsign||o.callsign||"").trim().toUpperCase();
+    const name=String(options.name||o.user.name||"").trim();
+    const title=String(options.title||o.rank?.name||"").trim();
+    if(!/^[A-Z0-9][A-Z0-9-]{1,14}$/.test(callsign)||!name||!title||[name,title].some(s=>s.includes("|")||/[\r\n]/.test(s)))return respond("Valid callsign, rank/title and name are required. Do not use | in fields.");
+    const nickname=callsign+" | "+title+" | "+name;
+    if(nickname.length>32)return respond("Nickname exceeds Discord's 32-character limit ("+nickname.length+"). Shorten the title or name.");
+    const conflict=await prisma.officer.findFirst({where:{id:{not:o.id},callsign:{equals:callsign,mode:"insensitive"}},select:{id:true}});
+    if(conflict)return respond("That callsign is already assigned.");
+    let changed;
+    try{changed=await setDiscordNickname(targetId,nickname);}catch(e){return respond(e instanceof Error?e.message:"Discord nickname update failed.");}
+    try{
+      await prisma.$transaction(async tx=>{
+        await tx.officer.update({where:{id:o.id},data:{callsign}});
+        if(name!==o.user.name)await tx.user.update({where:{id:o.userId},data:{name}});
+        await tx.auditLog.create({data:{actorId:account.userId,action:"DISCORD_NICKNAME_TEMPLATE_APPLIED",entity:"Officer",entityId:o.id,metadata:{from:changed.oldNickname,to:nickname,callsign,displayName:name,title}}});
+      });
+    }catch(e){console.error("DISCORD_NICKNAME_DB_SYNC_FAILED",e);return respond("Discord nickname changed, but the website database did not update. Command must reconcile this officer.");}
+    return respond("Nickname set: "+nickname+"\nWebsite callsign and name updated. Rank roles were not changed.");
+  }
   if(command==="setcallsign"){if(!isCommand)return respond("Command only.");const o=await targetOfficer();const callsign=String(options.callsign||"").trim().toUpperCase();const targetId=String(options.officer||"");if(!o||!/^\d{16,22}$/.test(targetId)||!/[A-Z0-9][A-Z0-9-]{1,14}$/.test(callsign))return respond("Select a linked officer and a callsign (2–15 letters, numbers or hyphens).");if(o.callsign===callsign)return respond("That officer already has this callsign.");const collision=await prisma.officer.findFirst({where:{callsign:{equals:callsign,mode:"insensitive"},id:{not:o.id}},select:{id:true}});if(collision)return respond("That callsign is already assigned to another officer.");let changed;try{changed=await changeDiscordCallsign(targetId,callsign);}catch(error){return respond(error instanceof Error?error.message:"Could not update Discord nickname.");}try{await prisma.$transaction(async tx=>{await tx.officer.update({where:{id:o.id},data:{callsign}});await tx.auditLog.create({data:{actorId:account.userId,action:"DISCORD_CALLSIGN_CHANGED",entity:"Officer",entityId:o.id,metadata:{from:o.callsign,to:callsign,oldNickname:changed.oldNickname,newNickname:changed.nickname}}});});return respond("Updated callsign to "+callsign+" and Discord nickname to "+changed.nickname);}catch(error){console.error("CALLSIGN_DB_UPDATE_FAILED",error);return respond("Discord nickname updated, but database update failed. Command staff must reconcile the personnel record.");}}
   if(["fire","suspend","reinstate"].includes(command||"")){if(!isCommand)return respond("Command only.");if(options.confirm!==true)return respond("Set confirm to True to authorize this action.");const reason=String(options.reason||"").trim();const o=await targetOfficer();if(!o||reason.length<5)return respond("Valid officer and reason (at least 5 characters) required.");const next=command==="fire"?"TERMINATED":command==="suspend"?"SUSPENDED":"ACTIVE";if(o.status===next)return respond("Officer already has this status.");await prisma.$transaction(async tx=>{await tx.officer.update({where:{id:o.id},data:{status:next as "TERMINATED"|"SUSPENDED"|"ACTIVE",dutyStatus:"OFF_DUTY"}});await tx.auditLog.create({data:{actorId:account.userId,action:"DISCORD_OFFICER_"+next,entity:"Officer",entityId:o.id,metadata:{reason,previous:o.status}}});});return respond("Officer status updated: "+next+". Review Discord roles separately.");}
   if(command==="announcement"){if(!isCommand)return respond("Command only.");if(options.confirm!==true)return respond("Set confirm to True.");const title=String(options.title||"").trim(),body=String(options.message||"").trim();if(!title||!body||title.length>150||body.length>1800)return respond("Title (max 150) and message (max 1800) required.");const item=await prisma.announcement.create({data:{title,body,authorId:account.userId}});await log("DISCORD_ANNOUNCEMENT_PUBLISHED","Announcement",item.id);return respond("Announcement published: "+title);}
