@@ -47,14 +47,15 @@ async function guard() {
 }
 export async function GET() {
  if (!await guard()) return NextResponse.json({ error: "Command only" }, { status: 403 });
- const configured = Boolean(process.env.DISCORD_BOT_TOKEN && process.env.DISCORD_GUILD_ID && process.env.DISCORD_CLIENT_ID && process.env.DISCORD_PUBLIC_KEY);
+ const configured = Boolean(process.env.DISCORD_BOT_TOKEN && process.env.DISCORD_GUILD_ID && process.env.DISCORD_CLIENT_ID);
  return NextResponse.json({ configured, commands: commands.map(x => x.name) });
 }
 export async function POST() {
  const access = await guard();
  if (!access) return NextResponse.json({ error: "Command only" }, { status: 403 });
- const { DISCORD_BOT_TOKEN: token, DISCORD_CLIENT_ID: client, DISCORD_GUILD_ID: guild, DISCORD_PUBLIC_KEY: key } = process.env;
- if (!token || !client || !guild || !key) return NextResponse.json({ error: "Missing Discord bot token, application ID, guild ID or public key in Render." }, { status: 409 });
+ const { DISCORD_BOT_TOKEN: token, DISCORD_CLIENT_ID: client, DISCORD_GUILD_ID: guild } = process.env;
+ const missing = [["DISCORD_BOT_TOKEN",token],["DISCORD_CLIENT_ID",client],["DISCORD_GUILD_ID",guild]].filter(([,value])=>!value).map(([name])=>name);
+ if (missing.length) return NextResponse.json({ error: "Missing Render environment variables: "+missing.join(", ") }, { status: 409 });
  const response = await fetch("https://discord.com/api/v10/applications/" + client + "/guilds/" + guild + "/commands", {
   method: "PUT", headers: { Authorization: "Bot " + token, "Content-Type": "application/json" },
   body: JSON.stringify(commands), cache: "no-store"
