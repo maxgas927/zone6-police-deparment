@@ -12,7 +12,7 @@ export async function register(){
   if(running)return;
   running=true;
   const startedAt=Date.now();
-  globalThis.__z6pdNextDepartmentDiscordSyncAt=startedAt+60000;
+  globalThis.__z6pdNextDepartmentDiscordSyncAt=startedAt+900000;
   try{
    const result=await fullDepartmentDiscordSync();
    globalThis.__z6pdLastDepartmentDiscordSyncAt=Date.now();
@@ -21,6 +21,6 @@ export async function register(){
   finally{running=false}
  };
  await run();
- const timer=setInterval(run,60000);
+ const timer=setInterval(run,900000);
  timer.unref();
 }
